@@ -1,1 +1,2 @@
 FLASK_APP=spheres.py
+FLASK_ENV=development
