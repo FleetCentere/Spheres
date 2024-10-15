@@ -25,7 +25,7 @@ Purposes
 - tracking activities, content, people
 - scheduling to-do's, upcoming events, 
 - personal finance
-- 
+- House project
 
 Objects
 - Days
