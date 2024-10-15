@@ -26,6 +26,7 @@ Purposes
 - scheduling to-do's, upcoming events, 
 - personal finance
 - House project
+- Companies CRM
 
 Objects
 - Days
