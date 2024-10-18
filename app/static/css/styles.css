@@ -41,6 +41,11 @@
     color: #f0a500;
 }
 
+/* Login sheet */
+.login-error {
+    color: red;
+}
+
 /* Mobile Menu Toggle */
 .menu-toggle {
     display: none;
