@@ -8,12 +8,13 @@ Layers
 """Focal spheres, concepts, hobbies, storylines"""
 - Family
 - Work
+- Investing
 - Academics (spheres of learning)
 - Hobbies: this web app, raspberry pi, AI model, DC infrastructure, nuclear science, math, chip tape-out, space
 - Odin Project
 - Hugging Face
 - AI models
-- Building a company
+- Building a company / entrepreneurship
 - Sports
 - News/entertainment
 - Predictions: by anyone, in a given sphere
