@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
-from app.forms import LoginForm
+from app.forms import LoginForm, RegistrationForm
 from app.models import User
 import sqlalchemy as sa
 
@@ -36,7 +36,7 @@ def login():
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
-        if not next_page or urllsplit(next_page).netloc != "":
+        if not next_page or urlsplit(next_page).netloc != "":
             next_page = url_for("index")
         return redirect(url_for("index"))
     return render_template("login.html", form=form)
@@ -45,6 +45,20 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("index"))
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash("Congratulations, you are now a registered user")
+        return redirect(url_for("index"))
+    return render_template("register.html", form=form)
 
 @app.route("/about")
 def about():

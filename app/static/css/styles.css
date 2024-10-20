@@ -41,10 +41,12 @@
     color: #f0a500;
 }
 
-/* Login sheet */
-.login-error {
+/* Form */
+.login-error,
+.register-error {
     color: red;
 }
+
 
 /* Mobile Menu Toggle */
 .menu-toggle {
