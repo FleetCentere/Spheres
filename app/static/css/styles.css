@@ -43,7 +43,8 @@
 
 /* Form */
 .login-error,
-.register-error {
+.register-error,
+.edit_profile_error {
     color: red;
 }
 
