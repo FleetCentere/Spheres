@@ -37,6 +37,18 @@ Objects
 - Events (meetings, travel, appointments)
 - Content: videos, articles, podcasts, music/artists, TV shows, movies, 
 
+What do I want to be logging:
+- People (events I see them at, conversations I have, content of theirs I consume like podcasts or articles)
+- Personal activity and appointments (doctors, places with Henry, professional meetings, time at the office; everyday things like weight, meals, sleep location, )
+- Content I consume (podcasts, articles, youtube videos, audiobooks, music, books, conversations where I take notes, TV shows, movies, documentaries; some content is re-occuring)
+- Personal thoughts including reactions, predictions, 
+- Tie-ins to themes/topics ("thopics"?)
+- 
+
+What is the best setup for that:
+
+
+
 
 Day Object
 - date
@@ -48,6 +60,15 @@ TrackedByDay: its own object designed as an ASIC journal (a custom journal with 
 - wake time
 - breakfast/lunch/dinner/food
 - day theme (work, weekend, vacation, holiday, etc)
+
+People to follow:
+- DGB
+- Marek
+- Elliotte Friedman
+- Kevin from CSS
+- Matt Levine
+- Ben Limberg/Meg Rowley
+- Ben Gilbert/David Rosenthal
 
 ### TechStack ###
 - Git: Github
@@ -69,6 +90,7 @@ TrackedByDay: its own object designed as an ASIC journal (a custom journal with 
 - Server-rendered pages to start, potetnail for SPA
 
 ### Coding notes ###
+python -m venv venv
 .\venv\Scripts\activate
 pip install: flask, flask-sqlalchemy python-dotenv flask_login
 
@@ -89,7 +111,7 @@ pip install: flask, flask-sqlalchemy python-dotenv flask_login
 ├── /templates
 ├── /stati
 
-2: Adopt MVC pattern
+2: Adopt MVC pattern [model-view-controller]
 3: Use comments and docstrings
 4: User a linter and formatter like Flask8 or Black
 5: use environment vars to store sensitive data like keys or database creds (create a .env and install python-dotenv to load)
@@ -123,3 +145,6 @@ pip install: flask, flask-sqlalchemy python-dotenv flask_login
     Monitoring	Set up logging, use Sentry for error tracking.
 ]
 
+### gmail ###
+username: spheres.andrew@gmail.com
+#: SpheresProject!23
