@@ -10,6 +10,17 @@
 
     <hr>
 
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.post.label }}<br>
+            {{ form.post(cols=32, rows=4) }}<br>
+            {% for error in form.post.errors %}
+                <span>[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
     <ol>
     {% for post in posts %}
         <li>{{ post.author.username }} says {{ post.body }}</li>
