@@ -80,7 +80,7 @@ class User(UserMixin, db.Model):
         return (
             sa.select(Post)
             .join(Post.author.of_type(Author))
-            .join(Author.followers.of_type(Followers), isouter=True)
+            .join(Author.followers.of_type(Follower), isouter=True)
             .where(sa.or_(
                 Follower.id == self.id,
                 Author.id == self.id,
