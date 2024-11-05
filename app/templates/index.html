@@ -10,6 +10,7 @@
 
     <hr>
 
+    {% if form %}
     <form action="" method="POST">
         {{ form.hidden_tag() }}
         <p>
@@ -21,11 +22,12 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
-    <ol>
+    {% endif %}
+
     {% for post in posts %}
-        <li>{{ post.author.username }} says {{ post.body }}</li>
+        {% include "_post.html" %}
     {% endfor %}
-    </ol>
+
 </body>
 
 {% endblock %}
