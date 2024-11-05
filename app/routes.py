@@ -141,3 +141,8 @@ def about():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
+@app.route("/homepage")
+@login_required
+def homepage():
+    return render_template("homepage.html")
