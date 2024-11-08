@@ -28,6 +28,13 @@
         {% include "_post.html" %}
     {% endfor %}
 
+    {% if people %}
+    <hr>
+        {% for person in people %}
+            {% include "_person.html" %}
+        {% endfor %}
+    {% endif %}
+
 </body>
 
 {% endblock %}

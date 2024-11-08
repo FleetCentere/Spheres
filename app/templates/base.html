@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spheres</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block css %}{% endblock %}
 </head>
 <body>
     <nav class="navbar">
@@ -55,4 +56,5 @@
         });
     </script>
 </body>
+<footer>This is an HCM Production 2024</footer>
 </html>

@@ -86,3 +86,10 @@
         display: flex;
     }
 }
+
+footer {
+    background-color: lightblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
