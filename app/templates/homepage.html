@@ -7,8 +7,59 @@
 
 <div class="homepage-top">Top Section</div>
 <div class="homepage-bottom">
-    <div class="homepage-right">Left Side</div>
-    <div class="homepage-main">Middle</div>
+    <div class="homepage-right">
+        <h2>Add To-Do Item</h2>
+        <form action="{{ url_for('add_task') }}" method="POST">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.title.label }}<br>
+                {{ form.title }}
+                {% for error in form.title.errors %}
+                    <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.description.label }}<br>
+                {{ form.description }}
+                {% for error in form.description.errors %}
+                    <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+    <div class="homepage-main">
+        <h2>To Do List</h2>
+        {% if tasks %}
+        <hr>
+        <table>
+            <thead>
+                <tr>
+                    <td>Date Added</td>
+                    <td>Title</td>
+                    <td>Description</td>
+                    <td>Completed</td>
+                    <td>Delete</td>
+                </tr>
+            </thead>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.timestamp.strftime('%m/%d').lstrip('0').replace('/0', '/') }}</td>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>
+                    <form action="{{ url_for('update_task', task_id=task.id) }}" method="POST">
+                        <button type="submit">{{ "✔" if task.completed else " " }}</button>
+                    </form>
+                </td>
+                <td><a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a></td>
+            </tr>
+        </table>    
+        {% endfor %}
+        
+        {% endif %}
+
+    </div>
     <div class="homepage-left">Right Side</div>
 </div>
 

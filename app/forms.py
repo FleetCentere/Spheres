@@ -49,3 +49,8 @@ class EmptyForm(FlaskForm):
 class PostForm(FlaskForm):
     post = TextAreaField("Submit your post", validators=[DataRequired(), Length(min=1, max=240)])
     submit = SubmitField("Submit")
+
+class TaskForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    description = TextAreaField("Description")
+    submit = SubmitField("Submit")

@@ -2,8 +2,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm
-from app.models import User, Post
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm
+from app.models import User, Post, Task
 import sqlalchemy as sa
 from datetime import datetime, timezone
 
@@ -147,4 +147,40 @@ def contact():
 @app.route("/homepage")
 @login_required
 def homepage():
-    return render_template("homepage.html")
+    form = TaskForm()
+    query = current_user.tasks.select()
+    tasks = db.session.scalars(query).all()
+    return render_template("homepage.html", tasks=tasks, form=form)
+
+@app.route("/add_task", methods=["POST"])
+@login_required
+def add_task():
+    form = TaskForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        description = form.description.data
+        owner = current_user
+        task = Task(title=title, description=description, owner=owner)
+        db.session.add(task)
+        db.session.commit()
+        flash("Task added successfuly")
+        return redirect(url_for("homepage"))
+
+@app.route("/update_task/<int:task_id>", methods=["POST"])
+@login_required
+def update_task(task_id):
+    task = db.first_or_404(sa.select(Task).where(Task.id == task_id))
+    task.completed = not task.completed
+    db.session.commit()
+    flash("Task updated successfully")
+    return redirect(url_for("homepage"))
+
+
+@app.route("/delete_task/<int:task_id>", methods=["GET", "POST"])
+@login_required
+def delete_task(task_id):
+    task = db.first_or_404(sa.select(Task).where(Task.id == task_id))
+    task.deleted = not task.deleted
+    db.session.commit()
+    flash("Task deleted successfully")
+    return redirect(url_for("homepage"))

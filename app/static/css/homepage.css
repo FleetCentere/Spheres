@@ -20,9 +20,10 @@ body, html {
 }
 
 .homepage-left, .homepage-right, .homepage-main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* display: flex; */
+    padding-left: 3em;
+    /* justify-content: center;
+    align-items: center; */
 }
 
 .homepage-left, .homepage-right {
@@ -33,4 +34,12 @@ body, html {
 .homepage-main {
     width: 60%;
     background-color: lightcoral;
+}
+
+.form-error {
+    color: red;
+}
+
+table {
+    width: 100%;
 }

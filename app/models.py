@@ -29,6 +29,7 @@ class User(UserMixin, db.Model):
     last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
 
     posts: so.WriteOnlyMapped["Post"] = so.relationship(back_populates="author")
+    tasks: so.WriteOnlyMapped["Task"] = so.relationship(back_populates="owner")
 
     following: so.WriteOnlyMapped["User"] = so.relationship(
         secondary=followers,
@@ -104,3 +105,19 @@ class Post(db.Model):
 
     def __repr__(self):
         return "<Post {}>".format(self.body)
+
+class Task(db.Model):
+    __tablename__ = "tasks"
+
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    title: so.Mapped[str] = so.mapped_column(sa.String(100))
+    description: so.Mapped[str] = so.mapped_column(sa.Text)
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+    completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
+    deleted: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+
+    owner: so.Mapped[User] = so.relationship(back_populates="tasks")
+
+    def __repr__(self):
+        return "<Task {}>".format(self.title)
