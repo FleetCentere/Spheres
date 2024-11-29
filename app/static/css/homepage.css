@@ -1,12 +1,11 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .homepage-top {
-    height: 20%;
+    height: 10%;
     width: 100%;
     background-color: lightblue;
     display: flex;
@@ -20,10 +19,10 @@ body, html {
 }
 
 .homepage-left, .homepage-right, .homepage-main {
-    /* display: flex; */
+    display: flex;
     padding-left: 3em;
-    /* justify-content: center;
-    align-items: center; */
+    justify-content: center;
+    align-items: center;
 }
 
 .homepage-left, .homepage-right {
@@ -40,6 +39,6 @@ body, html {
     color: red;
 }
 
-table {
+.formatted-table {
     width: 100%;
 }

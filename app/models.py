@@ -119,5 +119,11 @@ class Task(db.Model):
 
     owner: so.Mapped[User] = so.relationship(back_populates="tasks")
 
+    def mark_complete(self):
+        self.completed = not self.completed
+
+    def mark_delete(self):
+        self.deleted = not self.deleted
+
     def __repr__(self):
         return "<Task {}>".format(self.title)

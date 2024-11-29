@@ -32,14 +32,14 @@
         <h2>To Do List</h2>
         {% if tasks %}
         <hr>
-        <table>
+        <table class="formatted-table">
             <thead>
                 <tr>
-                    <td>Date Added</td>
-                    <td>Title</td>
-                    <td>Description</td>
-                    <td>Completed</td>
-                    <td>Delete</td>
+                    <th>Date Added</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Completed</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             {% for task in tasks %}

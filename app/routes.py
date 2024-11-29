@@ -89,43 +89,41 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template("edit_profile.html", form=form)
 
+def get_user_or_flash(username):
+    user = db.session.scalar(sa.select(User).where(User.username == username))
+    if user is None:
+        flash(f"User {username} not found")
+        return None
+    if user == current_user:
+        flash("You cannot perform this action on yourself!")
+        return None
+    return user
+
 @app.route("/follow/<username>", methods=["POST"])
 @login_required
 def follow(username):
     form = EmptyForm()
     if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.username == username))
-        if user is None:
-            flash(f"User {username} cannot be found")
-            return redirect(url_for("index"))
-        if user == current_user:
-            flash("You cannot follow yourself")
-            return redirect(url_for("user"), username=username)
-        current_user.follow(user)
-        db.session.commit()
-        flash(f"You are now following {username}")
+        user = get_user_or_flash(username)
+        if user:
+            current_user.follow(user)
+            db.session.commit()
+            flash(f"You are now following {username}")
         return redirect(url_for("user", username=username))
-    else:
-        return redirect(url_for("index"))
+    return redirect(url_for("index"))
 
 @app.route("/unfollow/<username>", methods=["POST"])
 @login_required
 def unfollow(username):
     form = EmptyForm()
     if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.username == username))
-        if user is None:
-            flash(f"User {username} not found")
-            return redirect(url_for("index"))
-        if user == current_user:
-            flash("You cannot unfollow yourself!")
-            return redirect(url_for("user", username=username))
-        current_user.unfollow(user)
-        db.session.commit()
-        flash(f"You are no longer following {username}")
-        return redirect(url_for("index"))
-    else:
-        return redirect(url_for("index"))
+        user = get_user_or_flash(username)
+        if user:
+            current_user.unfollow(user)
+            db.session.commit()
+            flash(f"You are no longer following {username}")
+        return redirect(url_for("user", username=username))
+    return redirect(url_for("index"))
 
 @app.route("/explore")
 @login_required
@@ -170,7 +168,7 @@ def add_task():
 @login_required
 def update_task(task_id):
     task = db.first_or_404(sa.select(Task).where(Task.id == task_id))
-    task.completed = not task.completed
+    task.mark_complete()
     db.session.commit()
     flash("Task updated successfully")
     return redirect(url_for("homepage"))
@@ -180,7 +178,7 @@ def update_task(task_id):
 @login_required
 def delete_task(task_id):
     task = db.first_or_404(sa.select(Task).where(Task.id == task_id))
-    task.deleted = not task.deleted
+    task.mark_delete()
     db.session.commit()
     flash("Task deleted successfully")
     return redirect(url_for("homepage"))
