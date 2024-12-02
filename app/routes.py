@@ -225,3 +225,70 @@ def add_person():
         db.session.commit()
         flash("Person has been added")
         return redirect(url_for("homepage"))
+
+@app.route("/add_workout", methods=["POST"])
+@login_required
+def add_workout():
+    workoutform = WorkoutForm()
+    if workoutform.validate_on_submit():
+        activity_name = workoutform.activity_name.data
+        activity_location = workoutform.activity_location.data
+        duration_minutes = workoutform.duration_minutes.data
+        distance_number = workoutform.distance_number.data
+        distance_units = workoutform.distance_units.data
+        athlete = current_user
+        workout = WorkoutActivity(activity_name=activity_name, 
+                                  activity_location=activity_location, 
+                                  duration_minutes=duration_minutes,
+                                  distance_number=distance_number,
+                                  distance_units=distance_units,
+                                  athlete=athlete)
+        db.session.add(workout)
+        db.session.commit()
+        flash("Workout has been submitted")
+        return redirect(url_for("homepage"))
+
+
+@app.route("/add_event", methods=["POST"])
+@login_required
+def add_event():
+    eventform = EventForm()
+    if eventform.validate_on_submit():
+        title = eventform.title.data
+        description = eventform.description.data
+        day = eventform.day.data
+        start_time = eventform.start_time.data
+        end_time = eventform.end_time.data
+        location = eventform.location.data
+        event = Event(title=title,
+                      description=description,
+                      day=day,
+                      start_time=start_time,
+                      end_time=end_time,
+                      location=location,
+                      event_owner=current_user)
+        db.session.add(event)
+        db.session.commit()
+        flash("Your event has been added")
+        return redirect(url_for("homepage"))
+
+
+@app.route("/add_content", methods=["POST"])
+@login_required
+def add_content():
+    contentform = ContentForm()
+    if contentform.validate_on_submit():
+        title = contentform.title.data
+        description = contentform.description.data
+        content_type = contentform.content_type.data
+        url = contentform.url.data
+        consumer = current_user
+        content = Content(title=title,
+                          description=description,
+                          content_type=content_type,
+                          url=url,
+                          consumer=consumer)
+        db.session.add(content)
+        db.session.commit()
+        flash("Your content has been added")
+        return redirect(url_for("homepage"))
