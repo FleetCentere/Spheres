@@ -25,14 +25,6 @@ event_attendees = sa.Table(
     sa.Column("person_id", sa.Integer, sa.ForeignKey("people.id"), primary_key=True)
 )
 
-post_references = sa.Table(
-    "post_references",
-    db.metadata,
-    sa.Column("post_id", sa.Integer, sa.ForeignKey("posts.id"), primary_key=True),
-    sa.Column("referenced_id", sa.Integer, primary_key=True),
-    sa.Column("referenced_type", sa.String(50), primary_key=True)
-)
-
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     
@@ -48,7 +40,7 @@ class User(UserMixin, db.Model):
     workout_activities: so.WriteOnlyMapped["WorkoutActivity"] = so.relationship(back_populates="athlete")
     people: so.WriteOnlyMapped["Person"] = so.relationship(back_populates="friend")
     events: so.WriteOnlyMapped["Event"] = so.relationship(back_populates="event_owner")
-    contents: so.WriteonlyMapped["Content"] = so.relationship(back_populates="consumer")
+    contents: so.WriteOnlyMapped["Content"] = so.relationship(back_populates="consumer")
 
     following: so.WriteOnlyMapped["User"] = so.relationship(
         secondary=followers,
@@ -116,7 +108,8 @@ class Post(db.Model):
     __tablename__ = "posts"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    body: so.Mapped[str] = so.mapped_column(sa.String(140))
+    title: so.Mapped[str] = so.mapped_column(sa.String(140), default="")
+    body: so.Mapped[str] = so.mapped_column(sa.Text)
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
@@ -128,7 +121,7 @@ class Post(db.Model):
     def __repr__(self):
         return "<Post {}>".format(self.body)
 
-class PostReference(db.Mode):
+class PostReference(db.Model):
     __tablename__ = "post_references"
 
     post_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("posts.id"), primary_key=True)
@@ -206,10 +199,11 @@ class Event(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(140))
     description: so.Mapped[Optional[str]] = so.mapped_column(sa.Text)
+    day: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
     start_time: so.Mapped[datetime] = so.mapped_column()
     end_time: so.Mapped[datetime] = so.mapped_column()
     location: so.Mapped[str] = so.mapped_column(sa.String(120))
-    user_id: so.mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
     event_owner: so.Mapped[User] = so.relationship(back_populates="events")
 

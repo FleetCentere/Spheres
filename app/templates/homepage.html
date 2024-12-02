@@ -13,26 +13,99 @@
 </div>
 
 <div class="homepage-bottom">
-    <div class="homepage-right">
-        <h2>Add To-Do Item</h2>
-        <form action="{{ url_for('add_task') }}" method="POST">
-            {{ form.hidden_tag() }}
-            <p>
-                {{ form.title.label }}<br>
-                {{ form.title }}
-                {% for error in form.title.errors %}
-                    <span class="form-error">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-            <p>
-                {{ form.description.label }}<br>
-                {{ form.description }}
-                {% for error in form.description.errors %}
-                    <span class="form-error">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-            <p>{{ form.submit() }}</p>
-        </form>
+    <div class="homepage-left">
+        <div class="section">
+            <h2>Add To-Do Item</h2>
+            <form action="{{ url_for('add_task') }}" method="POST">
+                {{ taskform.hidden_tag() }}
+                <p>
+                    {{ taskform.title.label }}<br>
+                    {{ taskform.title }}
+                    {% for error in taskform.title.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ taskform.description.label }}<br>
+                    {{ taskform.description }}
+                    {% for error in taskform.description.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>{{ taskform.submit() }}</p>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Add Post</h2>
+            <form action="{{ url_for('add_post') }}" method="POST">
+                {{ postform.hidden_tag() }}
+                <p>
+                    {{ postform.title.label }}<br>
+                    {{ postform.title }}
+                    {% for error in postform.title.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ postform.body.label }}<br>
+                    {{ postform.body }}
+                    {% for error in postform.body.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>{{ taskform.submit() }}</p>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Add Person</h2>
+            <form action="{{ url_for('add_person') }}" method="POST">
+                {{ personform.hidden_tag() }}
+                <p>
+                    {{ personform.name.label }}<br>
+                    {{ personform.name }}
+                    {% for error in personform.name.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ personform.birthday.label }}<br>
+                    {{ personform.birthday }}
+                    {% for error in personform.birthday.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ personform.entity.label }}<br>
+                    {{ personform.entity }}
+                    {% for error in personform.entity.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ personform.bio.label }}<br>
+                    {{ personform.bio }}
+                    {% for error in personform.bio.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>{{ personform.submit() }}</p>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Add Event</h2>
+        </div>
+
+        <div class="section">
+            <h2>Add Content</h2>
+        </div>
+
+        <div class="section">
+            <h2>Add Workout</h2>
+        </div>
+        
     </div>
     <div class="homepage-main">
         <h2>To Do List</h2>
@@ -66,8 +139,11 @@
         {% endif %}
 
     </div>
-    <div class="homepage-left">
+    <div class="homepage-right">
         <h2>Right Side</h2>
+        {% for post in posts %}
+            <p>{{ post.title }}: {{ post.body }}</p>
+        {% endfor %}
     </div>
 </div>
 

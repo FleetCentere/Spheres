@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField, DateField, DateTimeField, TimeField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length
 import sqlalchemy as sa
 from app import db
@@ -47,10 +47,44 @@ class EmptyForm(FlaskForm):
     submit = SubmitField("Submit")
 
 class PostForm(FlaskForm):
-    post = TextAreaField("Submit your post", validators=[DataRequired(), Length(min=1, max=240)])
+    title = StringField("Title")
+    body = TextAreaField("Submit your post", validators=[DataRequired(), Length(min=1, max=240)])
     submit = SubmitField("Submit")
 
 class TaskForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     description = TextAreaField("Description")
+    submit = SubmitField("Submit")
+
+class WorkoutForm(FlaskForm):
+    activity_name = StringField("Activity Name")
+    activity_location = StringField("Location")
+    duration_minutes = IntegerField("Time (minutes)")
+    distance_number = IntegerField("Distance")
+    distance_units = StringField("Distance units")
+    submit = SubmitField("Submit")
+
+class PersonForm(FlaskForm):
+    name = StringField("Name")
+    birthday = DateField("Birthday")
+    entity = StringField("Entity")
+    bio = TextAreaField("Bio")
+    submit = SubmitField("Submit")
+
+class ContentForm(FlaskForm):
+    title = StringField("Title")
+    description = StringField("Description")
+    content_type = StringField("Type")
+    url = StringField("url")
+    date_time = DateTimeField("Date and time")
+    submit = SubmitField("Submit")
+
+
+class EventForm(FlaskForm):
+    title = StringField("Title")
+    description = StringField("Description")
+    day = DateField("Day")
+    start_time = TimeField("Start Time")
+    end_time = TimeField("End Time")
+    location = StringField("Location")
     submit = SubmitField("Submit")

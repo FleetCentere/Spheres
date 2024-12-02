@@ -14,9 +14,16 @@
     <form action="" method="POST">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.post.label }}<br>
-            {{ form.post(cols=32, rows=4) }}<br>
-            {% for error in form.post.errors %}
+            {{ form.title.label }}
+            {{ form.title }}
+            {% for error in form.title.errors %}
+                <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.body.label }}<br>
+            {{ form.body(cols=32, rows=4) }}<br>
+            {% for error in form.body.errors %}
                 <span>[{{ error }}]</span>
             {% endfor %}
         </p>

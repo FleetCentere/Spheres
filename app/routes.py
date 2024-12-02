@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm
 from app.models import User, Post, Task
 import sqlalchemy as sa
 from datetime import datetime, timezone
@@ -20,7 +20,7 @@ def index():
     form = PostForm()
     posts = db.session.scalars(current_user.following_posts()).all()
     if form.validate_on_submit():
-        post = Post(body=form.post.data, author=current_user)
+        post = Post(body=form.body.data, title=form.title.data, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash("Your post has been submitted")
@@ -145,18 +145,31 @@ def contact():
 @app.route("/homepage")
 @login_required
 def homepage():
-    form = TaskForm()
-    query = current_user.tasks.select()
-    tasks = db.session.scalars(query).all()
-    return render_template("homepage.html", tasks=tasks, form=form)
+    taskform = TaskForm()
+    postform = PostForm()
+    workoutform = WorkoutForm()
+    personform = PersonForm()
+    contentform = ContentForm()
+    eventform = EventForm()
+    query = db.session.query(Task).filter(Task.user_id == current_user.id, Task.deleted == False).order_by(sa.desc(Task.timestamp)) 
+    tasks = query.all()
+    query = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp))
+    posts = query.all()
+    return render_template("homepage.html", tasks=tasks, posts=posts,
+                            taskform=taskform, 
+                            postform=postform, 
+                            personform=personform,
+                            workoutform=workoutform, 
+                            eventform=eventform,
+                            contentform=contentform)
 
 @app.route("/add_task", methods=["POST"])
 @login_required
 def add_task():
-    form = TaskForm()
-    if form.validate_on_submit():
-        title = form.title.data
-        description = form.description.data
+    taskform = TaskForm()
+    if taskform.validate_on_submit():
+        title = taskform.title.data
+        description = taskform.description.data
         owner = current_user
         task = Task(title=title, description=description, owner=owner)
         db.session.add(task)
@@ -182,3 +195,33 @@ def delete_task(task_id):
     db.session.commit()
     flash("Task deleted successfully")
     return redirect(url_for("homepage"))
+
+@app.route("/add_post", methods=["POST"])
+@login_required
+def add_post():
+    postform = PostForm()
+    if postform.validate_on_submit():
+        title = postform.title.data
+        body = postform.body.data
+        author = current_user
+        post = Post(title=title, body=body, author=author)
+        db.session.add(post)
+        db.session.commit()
+        flash("Post added successfuly")
+        return redirect(url_for("homepage"))
+
+@app.route("/add_person", methods=["POST"])
+@login_required
+def add_person():
+    personform = PersonForm()
+    if personform.validate_on_submit():
+        name = personform.name.data
+        birthday = personform.birthday.data
+        entity = personform.entity.data
+        bio = personform.bio.data
+        friend = current_user
+        person = Person(name=name, birthday=birthday, entity=entity, bio=bio, friend=friend)
+        db.session.add(person)
+        db.session.commit()
+        flash("Person has been added")
+        return redirect(url_for("homepage"))
