@@ -5,7 +5,13 @@
 
 {% block content %}
 
-<div class="homepage-top">Top Section</div>
+<div class="homepage-top">
+    <h2>Top section</h2>
+    <p>First row of info</p>
+    <p>Second row of data</p>
+    <p>Third row of content</p>
+</div>
+
 <div class="homepage-bottom">
     <div class="homepage-right">
         <h2>Add To-Do Item</h2>
@@ -49,18 +55,20 @@
                 <td>{{ task.description }}</td>
                 <td>
                     <form action="{{ url_for('update_task', task_id=task.id) }}" method="POST">
-                        <button type="submit">{{ "✔" if task.completed else " " }}</button>
+                        <button type="submit">{{ "✔" if task.completed else "___" }}</button>
                     </form>
                 </td>
                 <td><a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a></td>
             </tr>
+            {% endfor %}
         </table>    
-        {% endfor %}
         
         {% endif %}
 
     </div>
-    <div class="homepage-left">Right Side</div>
+    <div class="homepage-left">
+        <h2>Right Side</h2>
+    </div>
 </div>
 
 

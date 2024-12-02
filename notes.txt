@@ -1,7 +1,7 @@
 Notes for project
 Start date: Saturday October 12, 2024
 
-Just get going
+Just get going - make many mini projects
 
 ### Outline notes ###
 Layers
@@ -30,12 +30,23 @@ Purposes
 - Companies CRM
 
 Objects
-- Days
+- Days [x]
 - People
 - Companies/entities
 - Places
 - Events (meetings, travel, appointments)
 - Content: videos, articles, podcasts, music/artists, TV shows, movies, 
+- Workouts
+
+Decided Objects:
+- Workouts including content during workout
+- Events including meetings with people and complete/incomplete
+- People
+- Content (podcasts, articles, youtube videos, audiobooks, music, books, TV shows, movies, documentaries); toggle for complete or incomplete
+- ContentCreators (podcasts, substacks, youtubes, etc)
+- Weights
+- Companies
+- Posts, about one or many of content/events/companies
 
 What do I want to be logging:
 - People (events I see them at, conversations I have, content of theirs I consume like podcasts or articles)
@@ -46,13 +57,14 @@ What do I want to be logging:
 - 
 
 What is the best setup for that:
-
-
+- I think I want a dayTable
+- Initial tables: Days, Persons, Events, Content
+- Can I create a template to make a custom type in the interface: let the user pick the attributes, through a dynamic loop that adds attributes while/for/etc
 
 
 Day Object
 - date
-- backref: headlines/news, events, content consumed, people seen/spoke/interacted, 
+- backref: headlines/news [E], events [E], content consumed [C], people seen/spoke/interacted [P], 
 
 TrackedByDay: its own object designed as an ASIC journal (a custom journal with 1 purpose)
 - weight
@@ -61,6 +73,11 @@ TrackedByDay: its own object designed as an ASIC journal (a custom journal with 
 - breakfast/lunch/dinner/food
 - day theme (work, weekend, vacation, holiday, etc)
 
+WorkVersion:
+- Github for convert profiles
+- Every bond as a stack of papers, stack of papers as running set of changes to characteristics of bond such that n+1 = n with [adjustments] in a github way
+
+
 People to follow:
 - DGB
 - Marek
@@ -68,7 +85,11 @@ People to follow:
 - Kevin from CSS
 - Matt Levine
 - Ben Limberg/Meg Rowley
+- Derek Thompson
 - Ben Gilbert/David Rosenthal
+- Ben Thompson
+- John Y from Asianometry
+- Dylan Patel from semianalysis
 
 ### TechStack ###
 - Git: Github
