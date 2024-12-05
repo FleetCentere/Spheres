@@ -169,7 +169,13 @@
                         <span class="form-error">[{{ error }}]</span>
                     {% endfor %}
                 </p>
-
+                <p>
+                    {{ contentform.content_type.label }}<br>
+                    {{ contentform.content_type }}
+                    {% for error in contentform.content_type.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
                 <p>{{ contentform.submit() }}</p>
             </form>
         </div>
@@ -251,10 +257,57 @@
 
     </div>
     <div class="homepage-right">
-        <h2>Right Side</h2>
-        {% for post in posts %}
-            <p>{{ post.title }}: {{ post.body }}</p>
-        {% endfor %}
+        {% if posts %}
+            <h2>Posts</h2>
+            <table>
+                {% for post in posts %}
+                <tr>
+                    <td>{{ post.title }}</td>
+                    <td>{{ post.body }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+        
+        
+        {% if people %}
+        <hr>
+        <h2>People:</h2>
+        <table>
+            {% for person in people %}
+                <tr>
+                    <td>{{ person.name }}</td>
+                    <td>{{ person.entity }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        
+        {% if contents %}
+        <hr>
+        <h2>Contents:</h2>
+        <table>
+            {% for content in contents %}
+                <tr>
+                    <td>{{ content.title }}</td>
+                    <td>{{ content.content_type }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        {% if events %}
+        <hr>
+        <h2>Events</h2>
+        <table>
+            {% for event in events %}
+                <tr>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.day }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
     </div>
 </div>
 

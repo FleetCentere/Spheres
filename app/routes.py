@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm
-from app.models import User, Post, Task
+from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content
 import sqlalchemy as sa
 from datetime import datetime, timezone
 
@@ -151,11 +151,28 @@ def homepage():
     personform = PersonForm()
     contentform = ContentForm()
     eventform = EventForm()
+    # getting tasks
     query = db.session.query(Task).filter(Task.user_id == current_user.id, Task.deleted == False).order_by(sa.desc(Task.timestamp)) 
     tasks = query.all()
+    # getting posts
     query = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp))
     posts = query.all()
-    return render_template("homepage.html", tasks=tasks, posts=posts,
+    # getting people
+    query = db.session.query(Person).filter(Person.user_id == current_user.id)
+    people = query.all()
+    # getting events
+    query = db.session.query(Event).filter(Event.user_id == current_user.id).order_by(sa.desc(Event.day))
+    events = query.all()
+    # getting content
+    query = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp))
+    contents = query.all()
+
+    return render_template("homepage.html", 
+                            tasks=tasks, 
+                            posts=posts,
+                            people=people,
+                            contents=contents,
+                            events=events,
                             taskform=taskform, 
                             postform=postform, 
                             personform=personform,
@@ -224,6 +241,9 @@ def add_person():
         db.session.add(person)
         db.session.commit()
         flash("Person has been added")
+        return redirect(url_for("homepage"))
+    else:
+        flash("Not validated upon submit")
         return redirect(url_for("homepage"))
 
 @app.route("/add_workout", methods=["POST"])

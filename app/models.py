@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, time
 from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -200,8 +200,8 @@ class Event(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(140))
     description: so.Mapped[Optional[str]] = so.mapped_column(sa.Text)
     day: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
-    start_time: so.Mapped[datetime] = so.mapped_column()
-    end_time: so.Mapped[datetime] = so.mapped_column()
+    start_time: so.Mapped[time] = so.mapped_column()
+    end_time: so.Mapped[time] = so.mapped_column()
     location: so.Mapped[str] = so.mapped_column(sa.String(120))
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
