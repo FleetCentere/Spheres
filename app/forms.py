@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField, DateField, DateTimeField, TimeField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length, Optional
 import sqlalchemy as sa
 from app import db
 from app.models import User
@@ -49,6 +49,11 @@ class EmptyForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField("Title")
     body = TextAreaField("Submit your post", validators=[DataRequired(), Length(min=1, max=240)])
+    tags = StringField("Tags", validators=[Optional()])
+    submit = SubmitField("Submit")
+
+class TagForm(FlaskForm):
+    name = StringField("Name")
     submit = SubmitField("Submit")
 
 class TaskForm(FlaskForm):

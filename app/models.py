@@ -25,6 +25,36 @@ event_attendees = sa.Table(
     sa.Column("person_id", sa.Integer, sa.ForeignKey("people.id"), primary_key=True)
 )
 
+# association tables for tags
+
+task_tags = sa.Table(
+    "task_tags",
+    db.metadata,
+    sa.Column("task_id", sa.Integer, sa.ForeignKey("tasks.id"), primary_key=True),
+    sa.Column("tag_id", sa.Integer, sa.ForeignKey("tags.id"), primary_key=True),
+)
+
+post_tags = sa.Table(
+    "post_tags",
+    db.metadata,
+    sa.Column("post_id", sa.Integer, sa.ForeignKey("posts.id"), primary_key=True),
+    sa.Column("tag_id", sa.Integer, sa.ForeignKey("tags.id"), primary_key=True),
+)
+
+event_tags = sa.Table(
+    "event_tags",
+    db.metadata,
+    sa.Column("event_id", sa.Integer, sa.ForeignKey("events.id"), primary_key=True),
+    sa.Column("tag_id", sa.Integer, sa.ForeignKey("tags.id"), primary_key=True),
+)
+
+content_tags = sa.Table(
+    "content_tags",
+    db.metadata,
+    sa.Column("content_id", sa.Integer, sa.ForeignKey("contents.id"), primary_key=True),
+    sa.Column("tag_id", sa.Integer, sa.ForeignKey("tags.id"), primary_key=True),
+)
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     
@@ -41,6 +71,7 @@ class User(UserMixin, db.Model):
     people: so.WriteOnlyMapped["Person"] = so.relationship(back_populates="friend")
     events: so.WriteOnlyMapped["Event"] = so.relationship(back_populates="event_owner")
     contents: so.WriteOnlyMapped["Content"] = so.relationship(back_populates="consumer")
+    tags: so.WriteOnlyMapped["Tag"] = so.relationship(back_populates="owner")
 
     following: so.WriteOnlyMapped["User"] = so.relationship(
         secondary=followers,
@@ -104,6 +135,20 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return "<User {}>".format(self.username)
 
+class Tag(db.Model):
+    __tablename__ = "tags"
+
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(100), unique=True, nullable=False)
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    owner: so.Mapped[User] = so.relationship(back_populates="tags")
+
+    posts: so.WriteOnlyMapped["Post"] = so.relationship("Post", secondary=post_tags, back_populates="tags")
+
+    def __repr__(self):
+        return f"<Tag {self.name}>"
+
 class Post(db.Model):
     __tablename__ = "posts"
 
@@ -114,24 +159,10 @@ class Post(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
     author: so.Mapped[User] = so.relationship(back_populates="posts")
-
-    references: so.WriteOnlyMapped["PostReference"] = so.relationship("PostReference", 
-        cascade="all, delete-orphan", back_populates="post")
-
+    tags: so.WriteOnlyMapped["Tag"] = so.relationship("Tag", secondary=post_tags, back_populates="posts")
+    
     def __repr__(self):
         return "<Post {}>".format(self.body)
-
-class PostReference(db.Model):
-    __tablename__ = "post_references"
-
-    post_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("posts.id"), primary_key=True)
-    referenced_id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    referenced_type: so.Mapped[str] = so.mapped_column(sa.String(50), primary_key=True)
-
-    post: so.Mapped[Post] = so.relationship(back_populates="references")
-
-    def __repr__(self):
-        return f"<PostReference {self.referenced_type} {self.referenced_id}>"
 
 class Task(db.Model):
     __tablename__ = "tasks"
@@ -145,6 +176,7 @@ class Task(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
     owner: so.Mapped[User] = so.relationship(back_populates="tasks")
+    tags: so.WriteOnlyMapped["Tag"] = so.relationship("Tag", secondary=task_tags, back_populates="tasks")
 
     def mark_complete(self):
         self.completed = not self.completed
@@ -206,6 +238,7 @@ class Event(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
     event_owner: so.Mapped[User] = so.relationship(back_populates="events")
+    tags: so.WriteOnlyMapped["Tag"] = so.relationship("Tag", secondary=event_tags, back_populates="events")
 
     attendees: so.WriteOnlyMapped["Person"] = so.relationship(
         "Person",
@@ -228,6 +261,7 @@ class Content(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
     consumer: so.Mapped[User] = so.relationship(back_populates="contents")
+    tags: so.WriteOnlyMapped["Tag"] = so.relationship("Tag", secondary=content_tags, back_populates="contents")
 
     def __repr__(self):
         return f"<Content {self.title} ({self.content_type})>"

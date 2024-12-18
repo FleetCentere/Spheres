@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm, TagForm
 from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content
 import sqlalchemy as sa
 from datetime import datetime, timezone
@@ -203,7 +203,6 @@ def update_task(task_id):
     flash("Task updated successfully")
     return redirect(url_for("homepage"))
 
-
 @app.route("/delete_task/<int:task_id>", methods=["GET", "POST"])
 @login_required
 def delete_task(task_id):
@@ -212,6 +211,19 @@ def delete_task(task_id):
     db.session.commit()
     flash("Task deleted successfully")
     return redirect(url_for("homepage"))
+
+@app.route("/add_tag", methods=["POST"])
+@login_required
+def add_tag():
+    tagform = TagForm()
+    if tagform.validate_on_submit():
+        name = tagform.name.data
+        owner = current_user
+        tag = Tag(name=name, owner=owner)
+        db.session.add(tag)
+        db.session.commit()
+        flash("Tag added successfully")
+        return redirect(url_for("homepage"))
 
 @app.route("/add_post", methods=["POST"])
 @login_required
