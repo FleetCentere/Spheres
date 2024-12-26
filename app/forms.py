@@ -80,10 +80,10 @@ class ContentForm(FlaskForm):
     title = StringField("Title")
     description = StringField("Description")
     content_type = StringField("Type")
+    content_creator = StringField("Creator")
     url = StringField("url")
     date_time = DateTimeField("Date and time")
     submit = SubmitField("Submit")
-
 
 class EventForm(FlaskForm):
     title = StringField("Title")

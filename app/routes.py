@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm, TagForm
-from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content
+from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content, Tag
 import sqlalchemy as sa
 from datetime import datetime, timezone
 
@@ -142,6 +142,12 @@ def about():
 def contact():
     return render_template("contact.html")
 
+@app.route("/projects")
+@login_required
+def projects():
+    return render_template("projects.html")
+
+
 @app.route("/homepage")
 @login_required
 def homepage():
@@ -151,6 +157,7 @@ def homepage():
     personform = PersonForm()
     contentform = ContentForm()
     eventform = EventForm()
+    tagform = TagForm()
     # getting tasks
     query = db.session.query(Task).filter(Task.user_id == current_user.id, Task.deleted == False).order_by(sa.desc(Task.timestamp)) 
     tasks = query.all()
@@ -166,6 +173,9 @@ def homepage():
     # getting content
     query = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp))
     contents = query.all()
+    # getting tags
+    query = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp))
+    tags = query.all()
 
     return render_template("homepage.html", 
                             tasks=tasks, 
@@ -173,12 +183,14 @@ def homepage():
                             people=people,
                             contents=contents,
                             events=events,
+                            tags=tags,
                             taskform=taskform, 
                             postform=postform, 
                             personform=personform,
                             workoutform=workoutform, 
                             eventform=eventform,
-                            contentform=contentform)
+                            contentform=contentform,
+                            tagform=tagform)
 
 @app.route("/add_task", methods=["POST"])
 @login_required
@@ -313,12 +325,14 @@ def add_content():
         title = contentform.title.data
         description = contentform.description.data
         content_type = contentform.content_type.data
+        content_creator = contentform.content_creator.data
         url = contentform.url.data
         consumer = current_user
         content = Content(title=title,
                           description=description,
                           content_type=content_type,
                           url=url,
+                          content_creator=content_creator,
                           consumer=consumer)
         db.session.add(content)
         db.session.commit()

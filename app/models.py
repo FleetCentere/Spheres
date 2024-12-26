@@ -145,6 +145,9 @@ class Tag(db.Model):
     owner: so.Mapped[User] = so.relationship(back_populates="tags")
 
     posts: so.WriteOnlyMapped["Post"] = so.relationship("Post", secondary=post_tags, back_populates="tags")
+    tasks: so.WriteOnlyMapped["Task"] = so.relationship("Task", secondary=task_tags, back_populates="tags")
+    events: so.WriteOnlyMapped["Event"] = so.relationship("Event", secondary=event_tags, back_populates="tags")
+    contents: so.WriteOnlyMapped["Content"] = so.relationship("Content", secondary=content_tags, back_populates="tags")
 
     def __repr__(self):
         return f"<Tag {self.name}>"
@@ -256,6 +259,7 @@ class Content(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(140), nullable=False)
     description: so.Mapped[str] = so.mapped_column(sa.Text)
     content_type: so.Mapped[str] = so.mapped_column(sa.String(50))
+    content_creator: so.Mapped[str] = so.mapped_column(sa.String(100), nullable=True)
     url: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     timestamp: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)

@@ -6,10 +6,25 @@
 {% block content %}
 
 <div class="homepage-top">
-    <h2>Top section</h2>
-    <p>First row of info</p>
-    <p>Second row of data</p>
-    <p>Third row of content</p>
+    <div class="homepage-top-left">
+        <h2>Top section</h2>
+        <p>First row of info</p>
+        <p>Second row of data</p>
+        <p>Third row of content</p>
+    </div>
+    <div class="homepage-top-right">
+        <h2>Add a Tag</h2>
+        <form action="{{ url_for('add_tag') }}" method="POST">
+            {{ tagform.hidden_tag() }}
+            <p>
+                {{ tagform.name }}
+                {% for error in tagform.name.errors %}
+                    <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ tagform.submit() }}</p>
+        </form>
+    </div>
 </div>
 
 <div class="homepage-bottom">
@@ -170,6 +185,13 @@
                     {% endfor %}
                 </p>
                 <p>
+                    {{ contentform.content_creator.label }}<br>
+                    {{ contentform.content_creator }}
+                    {% for error in contentform.content_creator.errors %}
+                        <span class="form-error">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
                     {{ contentform.content_type.label }}<br>
                     {{ contentform.content_type }}
                     {% for error in contentform.content_type.errors %}
@@ -304,6 +326,18 @@
                 <tr>
                     <td>{{ event.title }}</td>
                     <td>{{ event.day }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        {% if tags %}
+        <hr>
+        <h2>Tags</h2>
+        <table>
+            {% for tag in tags %}
+                <tr>
+                    <td>{{ tag.name }}</td>
                 </tr>
             {% endfor %}
         </table>

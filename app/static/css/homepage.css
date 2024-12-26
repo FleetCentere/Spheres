@@ -1,9 +1,24 @@
 
 .homepage-top {
     background-color: #f4f4f4;
-    padding: 1em;
-    text-align: center;
+    padding: 0.5em;
+    display: flex;
+    width: 100%;
     border-bottom: 1px solid #ccc;
+}
+
+.homepage-top-left {
+    justify-content: left;
+    flex: 1;
+    display: flex;
+    padding: 0.5em;
+    flex-direction: column;
+}
+
+.homepage-top-right {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5em;
 }
 
 .homepage-bottom {
