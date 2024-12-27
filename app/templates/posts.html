@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Posts</h2>
+{% if posts %}
+<table>
+    <thead>
+        <th>Date</th>
+        <th>Title</th>
+        <th>Body</th>
+        <th>Tags</th>
+    </thead>
+    {% for post in posts %}
+        <tr>
+            <td>{{ post.timestamp }}</td>
+            <td>{{ post.title }}</td>
+            <td>{{ post.body }}</td>
+            <td>
+                {% if tags %}
+                    {% for tag in tags %}
+                        <p>{{ tag.name }}</p>
+                    {% endfor %}
+                {% endif %}
+                <a href="{{ url_for('tag_post', post_id=post.id) }}">Add Tag</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

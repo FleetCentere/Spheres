@@ -68,10 +68,7 @@ def register():
 def user(username):
     form = EmptyForm()
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    posts = [
-        {"author": user, "body": "Test post #1"},
-        {"author": user, "body": "This is yet another test post"}
-    ]
+    posts = user.posts
     return render_template("user.html", user=user, posts=posts, form=form)
 
 @app.route("/edit_profile", methods=["GET", "POST"])
@@ -158,25 +155,13 @@ def homepage():
     contentform = ContentForm()
     eventform = EventForm()
     tagform = TagForm()
-    # getting tasks
-    query = db.session.query(Task).filter(Task.user_id == current_user.id, Task.deleted == False).order_by(sa.desc(Task.timestamp)) 
-    tasks = query.all()
-    # getting posts
-    query = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp))
-    posts = query.all()
-    # getting people
-    query = db.session.query(Person).filter(Person.user_id == current_user.id)
-    people = query.all()
-    # getting events
-    query = db.session.query(Event).filter(Event.user_id == current_user.id).order_by(sa.desc(Event.day))
-    events = query.all()
-    # getting content
-    query = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp))
-    contents = query.all()
-    # getting tags
-    query = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp))
-    tags = query.all()
-
+    # getting tasks, posts, people, events, content, tags
+    tasks = db.session.query(Task).filter(Task.user_id == current_user.id, Task.deleted == False).order_by(sa.desc(Task.timestamp)).all()
+    posts = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp)).all()
+    people = db.session.query(Person).filter(Person.user_id == current_user.id).all()
+    events = db.session.query(Event).filter(Event.user_id == current_user.id).order_by(sa.desc(Event.day)).all()
+    contents = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp)).all()
+    tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
     return render_template("homepage.html", 
                             tasks=tasks, 
                             posts=posts,
@@ -191,6 +176,67 @@ def homepage():
                             eventform=eventform,
                             contentform=contentform,
                             tagform=tagform)
+
+@app.route("/posts")
+@login_required
+def posts():
+    posts = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp)).all()
+    return render_template("posts.html", posts=posts)
+
+@app.route("/tag_post/<int:post_id>")
+@login_required
+def tag_post(post_id):
+    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
+    tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
+    return render_template("tag_post.html", post=post, tags=tags)
+
+@app.route("/tag_post_action/<int:post_id>/<int:tag_id>")
+@login_required
+def tag_post_action(post_id, tag_id):
+    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
+    tag = db.first_or_404(sa.select(Tag).where(Tag.id == tag_id))
+    if tag in post.tags:
+        flash("This tag has already been added")
+        return redirect(url_for("tag_post", post_id=post_id))
+    else:
+        post.tags.append(tag)
+        db.session.commit()
+        flash("Your tag has been added to your post")
+        return redirect(url_for("tag_post", post_id=post_id))
+
+@app.route("/remove_tag/<int:post_id>/<int:tag_id>")
+@login_required
+def remove_tag(post_id, tag_id):
+    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
+    tag = db.first_or_404(sa.select(Tag).where(Tag.id == tag_id))
+    if tag in post.tags:
+        post.tags.remove(tag)
+        db.session.commit()
+        flash("Your tag has been removed from this post")
+        return redirect(url_for("tag_post", post_id=post_id))
+    else:
+        flash("This tag is not currently applied to this post")
+        return redirect(url_for("tag_post", post_id=post_id))
+
+
+@app.route("/tags")
+@login_required
+def tags():
+    tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
+    tag_dict = {}
+    # for tag in tags:
+    #     posts = Post.query.join(post_tags).filter(post_tags.c.tag_id == tag.id).all()
+    #     tasks = Task.query.join(task_tags).filter(task_tags.c.tag_id == tag.id).all()
+    #     events = Event.query.join(event_tags).filter(event_tags.c.tag_id == tag.id).all()
+    #     contents = Content.query.join(content_tags).filter(content_tags.c.tag_id == tag.id).all()
+
+    #     tag_dict[tag.name] = {
+    #         "posts": posts,
+    #         "tasks": tasks,
+    #         "events": events,
+    #         "contents": contents
+    #     }
+    return render_template("tags.html", tags=tags, tag_dict=tag_dict)
 
 @app.route("/add_task", methods=["POST"])
 @login_required
