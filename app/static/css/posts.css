@@ -1,0 +1,90 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0e0e0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100%;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #555;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+h3 {
+    color: #666;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid #999;
+}
+
+th, td {
+    padding: 6px;  /* Reduced padding to make rows tighter */
+    text-align: left;
+}
+
+th {
+    background-color: #777;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #dcdcdc;
+}
+
+a {
+    color: #555;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.tag {
+    display: inline-block;
+    background-color: #f4f4f4;
+    color: #555;
+    padding: 3px 7px;
+    border-radius: 5px;
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.button-container {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: white;
+    background-color: #555;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 1em 0 0 1em;
+}
+
+.back-button:hover {
+    background-color: #777;
+}

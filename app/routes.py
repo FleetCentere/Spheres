@@ -183,26 +183,26 @@ def posts():
     posts = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp)).all()
     return render_template("posts.html", posts=posts)
 
-@app.route("/tag_post/<int:post_id>")
+@app.route("/edit_post/<int:post_id>")
 @login_required
-def tag_post(post_id):
+def edit_post(post_id):
     post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
     tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
-    return render_template("tag_post.html", post=post, tags=tags)
+    return render_template("edit_post.html", post=post, tags=tags)
 
-@app.route("/tag_post_action/<int:post_id>/<int:tag_id>")
+@app.route("/tag_post/<int:post_id>/<int:tag_id>")
 @login_required
-def tag_post_action(post_id, tag_id):
+def tag_post(post_id, tag_id):
     post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
     tag = db.first_or_404(sa.select(Tag).where(Tag.id == tag_id))
     if tag in post.tags:
         flash("This tag has already been added")
-        return redirect(url_for("tag_post", post_id=post_id))
+        return redirect(url_for("edit_post", post_id=post_id))
     else:
         post.tags.append(tag)
         db.session.commit()
         flash("Your tag has been added to your post")
-        return redirect(url_for("tag_post", post_id=post_id))
+        return redirect(url_for("edit_post", post_id=post_id))
 
 @app.route("/remove_tag/<int:post_id>/<int:tag_id>")
 @login_required
@@ -213,11 +213,10 @@ def remove_tag(post_id, tag_id):
         post.tags.remove(tag)
         db.session.commit()
         flash("Your tag has been removed from this post")
-        return redirect(url_for("tag_post", post_id=post_id))
+        return redirect(url_for("edit_post", post_id=post_id))
     else:
         flash("This tag is not currently applied to this post")
-        return redirect(url_for("tag_post", post_id=post_id))
-
+        return redirect(url_for("edit_post", post_id=post_id))
 
 @app.route("/tags")
 @login_required
@@ -225,11 +224,7 @@ def tags():
     tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
     tag_dict = {}
     # for tag in tags:
-    #     posts = Post.query.join(post_tags).filter(post_tags.c.tag_id == tag.id).all()
-    #     tasks = Task.query.join(task_tags).filter(task_tags.c.tag_id == tag.id).all()
-    #     events = Event.query.join(event_tags).filter(event_tags.c.tag_id == tag.id).all()
-    #     contents = Content.query.join(content_tags).filter(content_tags.c.tag_id == tag.id).all()
-
+    
     #     tag_dict[tag.name] = {
     #         "posts": posts,
     #         "tasks": tasks,

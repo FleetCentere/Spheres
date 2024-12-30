@@ -1,31 +1,50 @@
 {% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/posts.css') }}">
+{% endblock %}
 {% block content %}
 
-<h2>Posts</h2>
-{% if posts %}
-<table>
-    <thead>
-        <th>Date</th>
-        <th>Title</th>
-        <th>Body</th>
-        <th>Tags</th>
-    </thead>
-    {% for post in posts %}
-        <tr>
-            <td>{{ post.timestamp }}</td>
-            <td>{{ post.title }}</td>
-            <td>{{ post.body }}</td>
-            <td>
-                {% if tags %}
-                    {% for tag in tags %}
-                        <p>{{ tag.name }}</p>
-                    {% endfor %}
-                {% endif %}
-                <a href="{{ url_for('tag_post', post_id=post.id) }}">Add Tag</a>
-            </td>
-        </tr>
-    {% endfor %}
-</table>
-{% endif %}
+<div class="container">
+    <h2>Posts</h2>
+    {% if posts %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Body</th>
+                <th>Tags</th>
+            </tr>
+        </thead>
+        {% for post in posts %}
+            <tr>
+                <td>{{ post.timestamp }}</td>
+                <td>{{ post.title }}</td>
+                <td>{{ post.body }}</td>
+                <td>
+                    {% if tags %}
+                        {% for tag in tags %}
+                            <span class="tag">{{ tag.name }}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <a href="{{ url_for('edit_post', post_id=post.id) }}">Add Tag</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+</div>
 
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const dateElements = document.querySelectorAll('td:first-child'); // Adjust the selector as necessary
+        dateElements.forEach(el => {
+            const date = new Date(el.innerText);
+            const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().slice(-2)}`;
+            el.innerText = formattedDate;
+        });
+    });
+
+</script>
 {% endblock %}
