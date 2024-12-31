@@ -7,13 +7,13 @@
 
 <div class="homepage-top">
     <div class="homepage-top-left">
-        <h2>Top section</h2>
-        <p>First row of info</p>
-        <p>Second row of data</p>
-        <p>Third row of content</p>
+        <ul>
+            <li>Speak less and listen more</li>
+            <li>Manage the field as best you can</li>
+        </ul>
     </div>
     <div class="homepage-top-right">
-        <h2>Add a Tag</h2>
+        <h2><a href="{{ url_for('tags') }}">Tags</a></h2>
         <form action="{{ url_for('add_tag') }}" method="POST">
             {{ tagform.hidden_tag() }}
             <p>
@@ -24,7 +24,6 @@
             </p>
             <p>{{ tagform.submit() }}</p>
         </form>
-        <h6><a href="{{ url_for('tags') }}">All Tags</a></h6>
     </div>
 </div>
 
@@ -161,7 +160,7 @@
         </div>
 
         <div class="section">
-            <h2>Add Content</h2>
+            <h2><a href="{{ url_for('content') }}">Content</a></h2>
             <form action="{{ url_for('add_content') }}" method="POST">
                 {{ contentform.hidden_tag() }}
                 <p>
@@ -281,7 +280,7 @@
     </div>
     <div class="homepage-right">
         {% if posts %}
-            <h2>Posts</h2>
+            <h2><a href="{{ url_for('posts') }}">Posts</a></h2>
             <table>
                 {% for post in posts %}
                 <tr>
@@ -308,7 +307,7 @@
         
         {% if contents %}
         <hr>
-        <h2>Contents:</h2>
+        <h2><a href="{{ url_for('content') }}">Content</a></h2>
         <table>
             {% for content in contents %}
                 <tr>

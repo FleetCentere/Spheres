@@ -6,6 +6,10 @@
     font-family: 'Arial', sans-serif;
 }
 
+.main-section {
+    padding: 10px;
+}
+
 /* Navbar Styling */
 .navbar {
     display: flex;

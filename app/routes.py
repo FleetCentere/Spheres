@@ -5,6 +5,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm, TagForm
 from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content, Tag
 import sqlalchemy as sa
+from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
 
 @app.before_request
@@ -144,7 +145,6 @@ def contact():
 def projects():
     return render_template("projects.html")
 
-
 @app.route("/homepage")
 @login_required
 def homepage():
@@ -183,12 +183,19 @@ def posts():
     posts = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp)).all()
     return render_template("posts.html", posts=posts)
 
-@app.route("/edit_post/<int:post_id>")
+@app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
 @login_required
 def edit_post(post_id):
+    postform = PostForm()
     post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
     tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
-    return render_template("edit_post.html", post=post, tags=tags)
+    if postform.validate_on_submit():
+        post.body = postform.body.data
+        post.title = postform.title.data
+        db.session.commit()
+        flash("Your post has been successfully edited")
+        return redirect(url_for("edit_post", post_id=post_id))
+    return render_template("edit_post.html", post=post, tags=tags, postform=postform)
 
 @app.route("/tag_post/<int:post_id>/<int:tag_id>")
 @login_required
@@ -218,20 +225,63 @@ def remove_tag(post_id, tag_id):
         flash("This tag is not currently applied to this post")
         return redirect(url_for("edit_post", post_id=post_id))
 
+@app.route("/content")
+@login_required
+def content():
+    contents = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp)).all()
+    return render_template("content.html", contents=contents)
+
+@app.route("/edit_content/<int:content_id>")
+@login_required
+def edit_content(content_id):
+    content = db.first_or_404(sa.select(Content).where(Content.id == content_id))
+    tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
+    return render_template("edit_content.html", content=content, tags=tags)
+
+@app.route("/tag_content/<int:content_id>/<int:tag_id>")
+@login_required
+def tag_content(content_id, tag_id):
+    content = db.first_or_404(sa.select(Content).where(Content.id == content_id))
+    tag = db.first_or_404(sa.select(Tag).where(Tag.id == tag_id))
+    if tag in content.tags:
+        flash("This tag has already been added")
+        return redirect(url_for("edit_content", content_id=content_id))
+    else:
+        content.tags.append(tag)
+        db.session.commit()
+        flash("Your tag has been added to your content")
+        return redirect(url_for("edit_content", content_id=content_id))
+
+@app.route("/remove_tag_content/<int:content_id>/<int:tag_id>")
+@login_required
+def remove_tag_content(content_id, tag_id):
+    content = db.first_or_404(sa.select(Content).where(Content.id == content_id))
+    tag = db.first_or_404(sa.select(Tag).where(Tag.id == tag_id))
+    if tag in content.tags:
+        content.tags.remove(tag)
+        db.session.commit()
+        flash("Your tag has been removed from this piece of content")
+        return redirect(url_for("edit_content", content_id=content_id))
+    else:
+        flash("This tag is not currently applied to this piece of content")
+        return redirect(url_for("edit_content", content_id=content_id))
+
 @app.route("/tags")
 @login_required
 def tags():
-    tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
-    tag_dict = {}
-    # for tag in tags:
-    
-    #     tag_dict[tag.name] = {
-    #         "posts": posts,
-    #         "tasks": tasks,
-    #         "events": events,
-    #         "contents": contents
-    #     }
-    return render_template("tags.html", tags=tags, tag_dict=tag_dict)
+    tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).options(
+        joinedload(Tag.posts),
+        joinedload(Tag.events),
+        joinedload(Tag.tasks),
+        joinedload(Tag.contents)
+    ).order_by(sa.desc(Tag.timestamp)).all()
+    return render_template("tags.html", tags=tags)
+
+@app.route("/tag/<tag_id>")
+@login_required
+def tag(tag_id):
+    tag = db.first_or_404(sa.select(Tag).where(Tag.id == tag_id))
+    return render_template("tag.html", tag=tag)
 
 @app.route("/add_task", methods=["POST"])
 @login_required

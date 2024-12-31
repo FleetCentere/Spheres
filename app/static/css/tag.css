@@ -1,0 +1,32 @@
+.four-columns {
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Distribute columns evenly */
+    width: 100%; /* Make the container take up full width */
+  }
+  
+  .container {
+    flex: 1; /* Each child element takes up equal space */
+    padding: 1rem; /* Add some padding for aesthetics */
+    border: 1px solid #ddd; /* Optional: add a border for better visualization */
+    text-align: left; /* Center the text within each container */
+  }
+
+  .button-container {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: white;
+    background-color: #555;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 1em 0 0 1em;
+}
+
+.back-button:hover {
+    background-color: #777;
+}

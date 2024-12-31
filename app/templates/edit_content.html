@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/posts.css') }}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="button-container">
+        <a href="{{ url_for('content') }}" class="back-button">Back to Content</a>
+    </div>
+    
+    <div class="container">
+        <h2>{{ content.title }}</h2>
+        <h3>{{ content.body }}</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tag</th>
+                    <th>Applied</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tag in tags %}
+                <tr>
+                    <td><a href="{{ url_for('tag_content', content_id=content.id, tag_id=tag.id) }}">{{ tag.name }}</a></td>
+                    <td>
+                        {% if tag in content.tags %}
+                        Y
+                        {% else %}
+                        <!-- Empty cell for no applied tag -->
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if tag in content.tags %}
+                        <a href="{{ url_for('remove_tag_content', content_id=content.id, tag_id=tag.id) }}">Delete</a>
+                        {% else %}
+                        <!-- Empty cell for no delete link -->
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

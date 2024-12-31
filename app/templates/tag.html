@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tag.css') }}">
+{% endblock %}
+{% block content %}
+
+<div class="button-container">
+    <a href="{{ url_for('tags') }}" class="back-button">Back to Tags</a>
+</div>
+
+<h1>{{ tag.name }}</h1>
+<div class="four-columns">
+    <div class="container">
+        <h3>Posts</h3>
+        {% if tag.posts %}
+            {% for post in tag.posts %}
+                <p>{{ post.title }} on {{ post.timestamp }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="container">
+        <h3>Content</h3>
+        {% if tag.contents %}
+            {% for content in tag.contents %}
+                <p>{{ content.title }} from {{ content.content_creator }} on {{ content.timestamp }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="container">
+        <h3>Tasks</h3>
+        {% if tag.tasks %}
+            {% for task in tag.tasks %}
+                <p>{{ task.title }} from {{ task.timestamp }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="container">
+        <h3>Events</h3>
+        {% if tag.events %}
+            {% for event in tag.events %}
+                <p>{{ event.title }} on {{ event.day }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -11,38 +11,49 @@
     </div>
     
     <div class="container">
-        <h2>{{ post.title }}</h2>
-        <h3>{{ post.body }}</h3>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Tag</th>
-                    <th>Applied</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tag in tags %}
-                <tr>
-                    <td><a href="{{ url_for('tag_post', post_id=post.id, tag_id=tag.id) }}">{{ tag.name }}</a></td>
-                    <td>
-                        {% if tag in post.tags %}
-                        Y
-                        {% else %}
-                        <!-- Empty cell for no applied tag -->
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if tag in post.tags %}
-                        <a href="{{ url_for('remove_tag', post_id=post.id, tag_id=tag.id) }}">Delete</a>
-                        {% else %}
-                        <!-- Empty cell for no delete link -->
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="form-section">
+            <form action="" method="POST">
+                {{ postform.hidden_tag() }}
+                <label for="title">{{ postform.title.label }}</label>
+                <input type="text" id="title" name="{{ postform.title.name }}" value="{{ post.title }}" />
+                <br>
+                
+                <label for="body">{{ postform.body.label }}</label>
+                <textarea id="body" name="{{ postform.body.name }}">{{ post.body }}</textarea>
+                {{ postform.submit() }}
+            </form>
+        </div>
+        <div class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tag</th>
+                        <th>Applied</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags %}
+                    <tr>
+                        <td><a href="{{ url_for('tag_post', post_id=post.id, tag_id=tag.id) }}">{{ tag.name }}</a></td>
+                        <td>
+                            {% if tag in post.tags %}
+                            Y
+                            {% else %}
+                            <!-- Empty cell for no applied tag -->
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if tag in post.tags %}
+                            <a href="{{ url_for('remove_tag', post_id=post.id, tag_id=tag.id) }}">Delete</a>
+                            {% else %}
+                            <!-- Empty cell for no delete link -->
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
