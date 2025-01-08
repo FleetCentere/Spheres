@@ -1,0 +1,33 @@
+
+<form action="{{ url_for('add_person') }}" method="POST">
+    {{ personform.hidden_tag() }}
+    <p>
+        {{ personform.name.label }}<br>
+        {{ personform.name }}
+        {% for error in personform.name.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ personform.birthday.label }}<br>
+        {{ personform.birthday }}
+        {% for error in personform.birthday.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ personform.entity.label }}<br>
+        {{ personform.entity }}
+        {% for error in personform.entity.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ personform.bio.label }}<br>
+        {{ personform.bio }}
+        {% for error in personform.bio.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ personform.submit() }}</p>
+</form>

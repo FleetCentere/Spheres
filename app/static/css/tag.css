@@ -4,14 +4,14 @@
     width: 100%; /* Make the container take up full width */
   }
   
-  .container {
+.container {
     flex: 1; /* Each child element takes up equal space */
     padding: 1rem; /* Add some padding for aesthetics */
     border: 1px solid #ddd; /* Optional: add a border for better visualization */
     text-align: left; /* Center the text within each container */
   }
 
-  .button-container {
+.button-container {
     text-align: left;
     margin-bottom: 20px;
 }

@@ -1,0 +1,47 @@
+
+<form action="{{ url_for('add_event') }}" method="POST">
+    {{ eventform.hidden_tag() }}
+    <p>
+        {{ eventform.title.label }}<br>
+        {{ eventform.title }}
+        {% for error in eventform.title.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ eventform.description.label }}<br>
+        {{ eventform.description }}
+        {% for error in eventform.description.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ eventform.day.label }}<br>
+        {{ eventform.day }}
+        {% for error in eventform.day.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ eventform.start_time.label }}<br>
+        {{ eventform.start_time }}
+        {% for error in eventform.start_time.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ eventform.end_time.label }}<br>
+        {{ eventform.end_time }}
+        {% for error in eventform.end_time.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ eventform.location.label }}<br>
+        {{ eventform.location }}
+        {% for error in eventform.location.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ eventform.submit() }}</p>
+</form>

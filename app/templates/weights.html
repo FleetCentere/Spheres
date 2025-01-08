@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Weights</h2>
+{% if weights %}
+    <h1>Weight Entries</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Weight (lbs)</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for entry in weights %}
+                <tr>
+                    <td>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ entry.weight }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% endblock %}

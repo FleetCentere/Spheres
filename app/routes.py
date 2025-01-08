@@ -2,11 +2,16 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm, TagForm
-from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content, Tag
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm, TagForm, WeightForm, PredictionForm
+from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content, Tag, WeightEntry, Prediction
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, date
+
+bullets = ["Why not try to be excellent; it is fun to see how high you can score",
+            "There are no epiphanies, just keep doing one step at a time",
+            "Speak less and listen more",
+            "Manage the field as best you can"]
 
 @app.before_request
 def before_request():
@@ -148,6 +153,7 @@ def projects():
 @app.route("/homepage")
 @login_required
 def homepage():
+    predictionform = PredictionForm()
     taskform = TaskForm()
     postform = PostForm()
     workoutform = WorkoutForm()
@@ -155,6 +161,7 @@ def homepage():
     contentform = ContentForm()
     eventform = EventForm()
     tagform = TagForm()
+    weightform = WeightForm()
     # getting tasks, posts, people, events, content, tags
     tasks = db.session.query(Task).filter(Task.user_id == current_user.id, Task.deleted == False).order_by(sa.desc(Task.timestamp)).all()
     posts = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp)).all()
@@ -175,13 +182,26 @@ def homepage():
                             workoutform=workoutform, 
                             eventform=eventform,
                             contentform=contentform,
-                            tagform=tagform)
+                            tagform=tagform,
+                            weightform=weightform,
+                            predictionform=predictionform,
+                            bullets=bullets)
 
 @app.route("/posts")
 @login_required
 def posts():
     posts = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp)).all()
     return render_template("posts.html", posts=posts)
+
+@app.route("/people")
+@login_required
+def people():
+    return redirect("homepage")
+
+@app.route("/events")
+@login_required
+def events():
+    return redirect("homepage")
 
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
 @login_required
@@ -196,6 +216,11 @@ def edit_post(post_id):
         flash("Your post has been successfully edited")
         return redirect(url_for("edit_post", post_id=post_id))
     return render_template("edit_post.html", post=post, tags=tags, postform=postform)
+
+@app.route("/remove_post/<int:post_id>")
+@login_required
+def remove_post(post_id):
+    return redirect(url_for("posts"))
 
 @app.route("/tag_post/<int:post_id>/<int:tag_id>")
 @login_required
@@ -225,11 +250,92 @@ def remove_tag(post_id, tag_id):
         flash("This tag is not currently applied to this post")
         return redirect(url_for("edit_post", post_id=post_id))
 
-@app.route("/content")
+@app.route("/content", methods=["GET", "POST"])
+@app.route("/content/<int:content_id>", methods=["GET", "POST"])
 @login_required
-def content():
-    contents = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp)).all()
-    return render_template("content.html", contents=contents)
+def content(content_id=None):
+    form = ContentForm()
+    if content_id:
+        content = db.first_or_404(sa.select(Content).where(Content.id == content_id))
+    if form.validate_on_submit():
+        if content_id:
+            if content.consumer == current_user:
+                content.title = form.title.data
+                content.description = form.description.data
+                content.content_type = form.content_type.data
+                content.content_creator = form.content_creator.data
+                content.url = form.url.data
+                # If a workout_id was provided, link it to the workout
+                workout_id = request.form.get('workout_id')
+                if workout_id:
+                    workout = WorkoutActivity.query.get(workout_id)
+                    if workout and workout.athlete == current_user:
+                        content.workout = workout
+                db.session.commit()
+                flash('Your content has been updated!')
+                return redirect(url_for("content", content_id=content.id))
+        else:
+            content = Content(
+            title=form.title.data,
+            description=form.description.data,
+            content_type=form.content_type.data,
+            url=form.url.data,
+            content_creator=form.content_creator.data,
+            consumer=current_user)
+
+            # If a workout_id was provided, link it to the workout
+            workout_id = request.form.get('workout_id')
+            if workout_id:
+                workout = db.get_or_404(WorkoutActivity, workout_id)
+                if workout and workout.athlete == current_user:
+                    content.workout = workout
+
+            db.session.add(content)
+            db.session.commit()
+            flash('Your content has been added!')
+            return redirect(url_for("content"))
+    else:
+        print("Form not valid")
+
+    # Get creator statistics
+    creator_stats = db.session.query(
+        Content.content_creator,
+        sa.func.count(Content.id).label('count')
+    ).group_by(Content.content_creator).all()
+
+    # Get recent workouts for the dropdown
+    recent_workouts = WorkoutActivity.query.filter_by(
+        user_id=current_user.id
+    ).order_by(WorkoutActivity.timestamp_entry.desc()).limit(10).all()
+
+    # Get last 20 content items
+    recent_contents = Content.query.filter_by(
+        user_id=current_user.id
+    ).order_by(Content.timestamp.desc()).limit(20).all()
+
+    if content_id:
+        content = db.first_or_404(sa.select(Content).where(Content.id == content_id))
+        if content.consumer == current_user:
+            form.title.data = content.title
+            form.description.data = content.description
+            form.content_type.data = content.content_type
+            form.content_creator.data = content.content_creator
+            form.url.data = content.url
+        else:
+            flash("This is not your content to edit")
+            return redirect(url_for("content"))
+
+    return render_template('content2.html',
+                            form=form,
+                            creator_stats=creator_stats,
+                            recent_contents=recent_contents,
+                            recent_workouts=recent_workouts)
+
+# @app.route("/content")
+# @login_required
+# def content():
+#     contents = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp)).all()
+#     return render_template("content.html", contents=contents)
 
 @app.route("/edit_content/<int:content_id>")
 @login_required
@@ -371,12 +477,14 @@ def add_workout():
         duration_minutes = workoutform.duration_minutes.data
         distance_number = workoutform.distance_number.data
         distance_units = workoutform.distance_units.data
+        date = workoutform.day.data
         athlete = current_user
         workout = WorkoutActivity(activity_name=activity_name, 
                                   activity_location=activity_location, 
                                   duration_minutes=duration_minutes,
                                   distance_number=distance_number,
                                   distance_units=distance_units,
+                                  date=date,
                                   athlete=athlete)
         db.session.add(workout)
         db.session.commit()
@@ -428,4 +536,139 @@ def add_content():
         db.session.add(content)
         db.session.commit()
         flash("Your content has been added")
+        return redirect(url_for("content"))
+    if request.method == "POST":
+        for field, errors in contentform.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", "danger")
         return redirect(url_for("homepage"))
+
+@app.route("/add_weight", methods=["GET", "POST"])
+@login_required
+def add_weight():
+    weightform = WeightForm()
+    if weightform.validate_on_submit():
+        weight = weightform.weight.data
+        weightentry = WeightEntry(weight=weight, user=current_user)
+        db.session.add(weightentry)
+        db.session.commit()
+        flash("Your weight has been added")
+        return redirect(url_for("homepage"))
+    if request.method == "POST":
+        for field, errors in weightform.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", "danger")
+        return redirect(url_for("homepage"))
+
+@app.route("/weights", methods=["GET", "POST"])
+@login_required
+def weights():
+    all_weights = WeightEntry.query.filter_by(user_id=current_user.id).order_by(WeightEntry.timestamp.desc()).all()
+    return render_template("weights.html", weights=all_weights)
+
+def get_entries_by_user_and_date(model, user_id, target_date):
+    start_of_day = datetime.combine(target_date, datetime.min.time())
+    end_of_day = datetime.combine(target_date, datetime.max.time())
+
+    # workouts
+    if model == WorkoutActivity:
+        entries = (
+            model.query.
+            filter(model.user_id == model.id).
+            filter(model.date >= start_of_day, model.date <= end_of_day).
+            all()
+        )
+    elif model == Event:
+        entries = (
+            model.query.
+            filter(model.user_id == model.id).
+            filter(model.day == target_date).
+            all()
+        )
+    else:
+        entries = (
+            model.query.
+            filter(model.user_id == model.id).
+            filter(model.timestamp >= start_of_day, model.timestamp <= end_of_day).
+            all()
+        )
+    return entries
+
+@app.route("/days")
+@login_required
+def days():
+    n = 10
+    actions = { }
+    current_time = datetime.now(timezone.utc).date()
+    # fill up {actions} with keys of days and values of dictionaries, contents=[], tasks=[], etc for given date
+    list_of_days = [current_time]
+    for i in range(1,n):
+        list_of_days.append(current_time - timedelta(days=i))
+    for day in list_of_days:
+        contents = [1, 2, 3]
+        workouts = [4, 5, 6]
+        weights = [7, 8, 9]
+        posts = [10, 11, 12]
+        tasks = [13, 14, 15]
+        events = [16, 17, 18]
+        actions[day] = {"contents": get_entries_by_user_and_date(Content, current_user.id, day), 
+                        "workouts": get_entries_by_user_and_date(WorkoutActivity, current_user.id, day),
+                        "weights": weights,
+                        "posts": get_entries_by_user_and_date(Post, current_user.id, day),
+                        "tasks": tasks,
+                        "events": get_entries_by_user_and_date(Event, current_user.id, day)}
+    return render_template("days.html", actions=actions, list_of_days=list_of_days)
+
+@app.route("/predictions", methods=["GET", "POST"])
+@app.route("/predictions/<int:prediction_id>", methods=["GET", "POST"])
+@login_required
+def predictions(prediction_id=None):
+    predictionform = PredictionForm()
+    predictions = Prediction.query.filter_by(user_id=current_user.id).order_by(Prediction.timestamp.desc()).all()
+    # predictions = [
+    #     {"statement": "OpenAI will fall behind",
+    #     "timestamp": datetime.now(timezone.utc),
+    #     "check_date": date(2025, 12, 31),
+    #     "tags": [],
+    #     "id": 1,
+    #     },
+    #     {"statement": "NVDA will be below $140 at YE",
+    #     "timestamp": datetime.now(timezone.utc),
+    #     "check_date": date(2025, 12, 31),
+    #     "tags": [],
+    #     "id": 2,
+    #     }
+    # ]
+    if predictionform.validate_on_submit():
+        if prediction_id == None:
+            prediction = Prediction(statement=predictionform.statement.data,
+                                    check_date=predictionform.check_date.data,
+                                    associated_content=predictionform.associated_content.data,
+                                    predictor=current_user)
+            db.session.add(prediction)
+            db.session.commit()
+            flash("Your prediction has been added")
+        else:
+            prediction = db.first_or_404(sa.select(Prediction).where(Prediction.id == prediction_id))
+            if prediction.predictor == current_user:
+                prediction.statement = predictionform.statement.data
+                prediction.check_date = predictionform.check_date.data
+                prediction.associated_content = predictionform.associated_content.data
+                db.session.commit()
+                flash("Your prediction has been updated")
+        return redirect(url_for("predictions"))
+    if prediction_id is not None:
+        prediction = db.first_or_404(sa.select(Prediction).where(Prediction.id == prediction_id))
+        if prediction.predictor == current_user:
+            predictionform.statement.data = prediction.statement
+            predictionform.check_date.data = prediction.check_date
+            predictionform.associated_content.data = prediction.associated_content
+        else:
+            flash("You are unable to edit this prediction")
+            return(redirect(url_for("predictions")))
+    return render_template("predictions.html", predictions=predictions, predictionform=predictionform)
+
+@app.route("/add_prediction", methods=["GET", "POST"])
+@login_required
+def add_prediction():
+    return redirect(url_for("predictions"))

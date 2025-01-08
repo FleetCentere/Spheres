@@ -23,6 +23,7 @@
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
                 <li><a href="{{ url_for('explore') }}">Explore</a></li>
                 <li><a href="{{ url_for('homepage') }}">Homepage</a></li>
+                <li><a href="{{ url_for('days') }}">Days</a></li>
             {% endif %}
             <li><a href="{{ url_for('about') }}">About</a></li>
             <li><a href="{{ url_for('contact') }}">Contact</a></li>
@@ -36,7 +37,7 @@
     <hr>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <ul>
+        <ul class="flashed-message">
             {% for message in messages %}
             <li>{{ message }}</li>
             {% endfor %}

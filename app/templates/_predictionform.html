@@ -1,0 +1,26 @@
+
+<form action="" method="POST">
+    {{ predictionform.hidden_tag() }}
+    <p>
+        {{ predictionform.statement.label }}<br>
+        {{ predictionform.statement }}
+        {% for error in predictionform.statement.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ predictionform.check_date.label }}<br>
+        {{ predictionform.check_date }}
+        {% for error in predictionform.check_date.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ predictionform.associated_content.label }}<br>
+        {{ predictionform.associated_content }}
+        {% for error in predictionform.associated_content.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ predictionform.submit() }}</p>
+</form>

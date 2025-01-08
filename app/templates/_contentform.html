@@ -1,0 +1,40 @@
+
+<form action="{{ url_for('add_content') }}" method="POST">
+    {{ contentform.hidden_tag() }}
+    <p>
+        {{ contentform.title.label }}<br>
+        {{ contentform.title }}
+        {% for error in contentform.title.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ contentform.description.label }}<br>
+        {{ contentform.description }}
+        {% for error in contentform.description.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ contentform.url.label }}<br>
+        {{ contentform.url }}
+        {% for error in contentform.url.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ contentform.content_creator.label }}<br>
+        {{ contentform.content_creator }}
+        {% for error in contentform.content_creator.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ contentform.content_type.label }}<br>
+        {{ contentform.content_type }}
+        {% for error in contentform.content_type.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ contentform.submit() }}</p>
+</form>

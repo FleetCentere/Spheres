@@ -1,0 +1,47 @@
+
+<form action="{{ url_for('add_workout') }}" method="POST">
+    {{ workoutform.hidden_tag() }}
+    <p>
+        {{ workoutform.activity_name.label }}<br>
+        {{ workoutform.activity_name }}
+        {% for error in workoutform.activity_name.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ workoutform.day.label }}<br>
+        {{ workoutform.day }}
+        {% for error in workoutform.day.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ workoutform.activity_location.label }}<br>
+        {{ workoutform.activity_location }}
+        {% for error in workoutform.activity_location.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ workoutform.duration_minutes.label }}<br>
+        {{ workoutform.duration_minutes }}
+        {% for error in workoutform.duration_minutes.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ workoutform.distance_number.label }}<br>
+        {{ workoutform.distance_number }}
+        {% for error in workoutform.distance_number.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ workoutform.distance_units.label }}<br>
+        {{ workoutform.distance_units }}
+        {% for error in workoutform.distance_units.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ personform.submit() }}</p>
+</form>

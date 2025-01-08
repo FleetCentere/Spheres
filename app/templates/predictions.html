@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tags.css') }}">
+{% endblock %}
+{% block content %}
+
+
+<h1>Predictions Overview</h1>
+    <div>
+        {% include "_predictionform.html" %}
+    </div>
+    {% if predictions %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date Made</th>
+                <th>Statement</th>
+                <th>Check Date</th>
+                <th>Tags</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prediction in predictions %}
+            <tr>
+                <td>{{ prediction.timestamp }}</td>
+                <td><a href="{{ url_for('predictions', prediction_id=prediction.id) }}">{{ prediction.statement }}</a></td>
+                <td>{{ prediction.check_date }}</td>
+                <td>{{ prediction.tags }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+{% endblock %}

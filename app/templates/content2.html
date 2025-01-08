@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/content.css') }}">
+{% endblock %}
+{% block content %}
+<h1>Content Management</h1>
+
+<div class="content-grid">
+    <!-- Left Column - Form -->
+    <div class="form-section">
+        <div class="card">
+            <div class="card-header">
+                <h2>Add New Content</h2>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control") }}
+                        {% for error in form.title.errors %}
+                            <span class="form-error">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control") }}
+                        {% for error in form.description.errors %}
+                            <span class="form-error">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.content_type.label(class="form-label") }}
+                        {{ form.content_type(class="form-control") }}
+                        {% for error in form.content_type.errors %}
+                            <span class="form-error">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.content_creator.label(class="form-label") }}
+                        {{ form.content_creator(class="form-control") }}
+                        {% for error in form.content_creator.errors %}
+                            <span class="form-error">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.url.label(class="form-label") }}
+                        {{ form.url(class="form-control") }}
+                        {% for error in form.url.errors %}
+                            <span class="form-error">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.date_time.label(class="form-label") }}
+                        {{ form.date_time(class="form-control") }}
+                        {% for error in form.date_time.errors %}
+                            <span class="form-error">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="workout_id" class="form-label">Link to Workout (optional)</label>
+                        <select class="form-control" id="workout_id" name="workout_id">
+                            <option value="">-- Select Workout --</option>
+                            {% for workout in recent_workouts %}
+                                <option value="{{ workout.id }}">
+                                    {{ workout.activity_name }} - {{ workout.date.strftime('%Y-%m-%d') if workout.date }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {{ form.submit(class="btn btn-primary") }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Middle Column - Creator Stats -->
+    <div class="creator-section">
+        <div class="card">
+            <div class="card-header">
+                <h2>Content by Creator</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Creator</th>
+                            <th>Number of Items</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for creator, count in creator_stats %}
+                            <tr>
+                                <td>{{ creator }}</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column - Recent Content -->
+    <div class="content-section">
+        <div class="card">
+            <div class="card-header">
+                <h2>Recent Content</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Creator</th>
+                            <th>Added On</th>
+                            <th>Linked Workout</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for content in recent_contents %}
+                            <tr {% if content.workout %}class="table-info"{% endif %}>
+                                <td>
+                                    {% if content.url %}
+                                        <a href="{{ content.url }}" target="_blank" rel="noopener noreferrer">{{ content.title }}</a>
+                                    {% else %}
+                                        {{ content.title }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ content.content_type }}</td>
+                                <td>{{ content.content_creator }}</td>
+                                <td><a href="{{ url_for('content', content_id=content.id) }}">{{ content.timestamp.strftime('%Y-%m-%d %H:%M') }}</a></td>
+                                <td>
+                                    {% if content.workout %}
+                                        {{ content.workout.activity_name }} 
+                                        ({{ content.workout.date.strftime('%Y-%m-%d') if content.workout.date }})
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if content.tags %}
+                                        {% for tag in content.tags %}
+                                            <span class="tag">{{ tag.name }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <a href="{{ url_for('edit_content', content_id=content.id) }}" class="btn-primary">Add Tag</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

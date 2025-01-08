@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Days</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Posts</th>
+            <th>Contents</th>
+            <th>Workouts</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for day in list_of_days %}
+        <tr>
+            <td>{{ day }}</td>
+            <td>{{ actions[day].posts }}</td>
+            <td>{{ actions[day].contents }}</td>
+            <td>{{ actions[day].workouts }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

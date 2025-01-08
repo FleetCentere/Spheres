@@ -1,0 +1,124 @@
+/* Grid Layout */
+.content-grid {
+    display: grid;
+    grid-template-columns: 15% 20% 65%;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.form-section,
+.creator-section,
+.content-section {
+    min-width: 0; /* Prevents overflow in grid items */
+}
+
+/* Card Styling */
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+/* Form Controls */
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #444;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+textarea.form-control {
+    min-height: 100px;
+}
+
+/* Table Styling */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.table-info {
+    background-color: #e3f2fd;
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: #0d6efd;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .content-section .table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* Links */
+a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Make form inputs mobile-friendly */
+@media (max-width: 768px) {
+    .form-control {
+        font-size: 16px;
+    }
+}

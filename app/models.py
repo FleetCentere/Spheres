@@ -55,6 +55,13 @@ content_tags = sa.Table(
     sa.Column("tag_id", sa.Integer, sa.ForeignKey("tags.id"), primary_key=True),
 )
 
+prediction_tags = sa.Table(
+    "prediction_tags",
+    db.metadata,
+    sa.Column("prediction_id", sa.Integer, sa.ForeignKey("predictions.id"), primary_key=True),
+    sa.Column("tag_id", sa.Integer, sa.ForeignKey("tags.id"), primary_key=True),
+)
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     
@@ -72,6 +79,8 @@ class User(UserMixin, db.Model):
     events: so.Mapped[list["Event"]] = so.relationship(back_populates="event_owner", uselist=True)
     contents: so.Mapped[list["Content"]] = so.relationship(back_populates="consumer", uselist=True)
     tags: so.Mapped[list["Tag"]] = so.relationship(back_populates="owner", uselist=True)
+    weight_entries: so.Mapped[list["WeightEntry"]] = so.relationship(back_populates="user", uselist=True)
+    predictions: so.Mapped[list["Prediction"]] = so.relationship(back_populates="predictor", uselist=True)
 
     following: so.Mapped[list["User"]] = so.relationship(
         secondary=followers,
@@ -149,6 +158,18 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return "<User {}>".format(self.username)
 
+class WeightEntry(db.Model):
+    __tablename__ = "weight_entries"
+
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    weight: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    user: so.Mapped[User] = so.relationship(back_populates="weight_entries")
+
+    def __repr__(self):
+        return f"<WeightEntry {self.weight} lbs on {self.timestamp}>"
+
 class Tag(db.Model):
     __tablename__ = "tags"
 
@@ -162,6 +183,7 @@ class Tag(db.Model):
     tasks: so.Mapped[list["Task"]] = so.relationship("Task", secondary=task_tags, back_populates="tags", uselist=True)
     events: so.Mapped[list["Event"]] = so.relationship("Event", secondary=event_tags, back_populates="tags", uselist=True)
     contents: so.Mapped[list["Content"]] = so.relationship("Content", secondary=content_tags, back_populates="tags", uselist=True)
+    predictions: so.Mapped[list["Prediction"]] = so.relationship("Prediction", secondary=prediction_tags, back_populates="tags", uselist=True)
 
     def __repr__(self):
         return f"<Tag {self.name}>"
@@ -170,7 +192,7 @@ class Post(db.Model):
     __tablename__ = "posts"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    title: so.Mapped[str] = so.mapped_column(sa.String(140), default="")
+    title: so.Mapped[str] = so.mapped_column(sa.String(140), default="", nullable=True)
     body: so.Mapped[str] = so.mapped_column(sa.Text)
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
@@ -213,20 +235,23 @@ class WorkoutActivity(db.Model):
     duration_minutes: so.Mapped[int] = so.mapped_column(sa.Integer)
     distance_number: so.Mapped[float] = so.mapped_column(sa.Float)
     distance_units: so.Mapped[str] = so.mapped_column(sa.String(100))
-    timestamp: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
+    date: so.Mapped[Optional[datetime]] = so.mapped_column(nullable=True)
+    timestamp_entry: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
+    
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
-
     athlete: so.Mapped[User] = so.relationship(back_populates="workout_activities")
-
+    
+    contents: so.Mapped[list["Content"]] = so.relationship(back_populates="workout", uselist=True)
+    
     def __repr__(self):
-        return f"<WorkoutActivity {self.activity_name} - {self.duration_minutes} min by {self.user_id}>"
+        return f"<WorkoutActivity {self.activity_name} - {self.duration_minutes} min by {self.athlete.username}>"
     
 class Person(db.Model):
     __tablename__ = "people"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(120), nullable=False)
-    birthday: so.Mapped[Optional[datetime]] = so.mapped_column()
+    birthday: so.Mapped[Optional[datetime]] = so.mapped_column(nullable=True)
     entity: so.Mapped[str] = so.mapped_column(sa.String(120))
     bio: so.Mapped[str] = so.mapped_column(sa.Text, default="")
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
@@ -276,10 +301,31 @@ class Content(db.Model):
     content_creator: so.Mapped[str] = so.mapped_column(sa.String(100), nullable=True)
     url: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     timestamp: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
+    
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
-
     consumer: so.Mapped[User] = so.relationship(back_populates="contents")
+    
+    workout_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(WorkoutActivity.id), index=True, nullable=True)
+    workout: so.Mapped[WorkoutActivity] = so.relationship(back_populates="contents")
+    
     tags: so.Mapped[list["Tag"]] = so.relationship("Tag", secondary=content_tags, back_populates="contents", uselist=True)
 
     def __repr__(self):
         return f"<Content {self.title} ({self.content_type})>"
+
+class Prediction(db.Model):
+    __tablename__ = "predictions"
+
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    statement: so.Mapped[str] = so.mapped_column(sa.String(140), nullable=False)
+    check_date: so.Mapped[datetime] = so.mapped_column()
+    associated_content: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256), nullable=True)
+    timestamp: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
+    
+    tags: so.Mapped[list["Tag"]] = so.relationship("Tag", secondary=prediction_tags, back_populates="predictions", uselist=True)
+
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    predictor: so.Mapped[User] = so.relationship(back_populates="predictions")
+    
+    def __repr__(self):
+        return f"<Prediction {self.statement} ({self.check_date})>"

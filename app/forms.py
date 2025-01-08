@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField, DateField, DateTimeField, TimeField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField, DateField, DateTimeField, TimeField, FloatField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length, Optional
 import sqlalchemy as sa
 from app import db
@@ -64,14 +64,15 @@ class TaskForm(FlaskForm):
 class WorkoutForm(FlaskForm):
     activity_name = StringField("Activity Name")
     activity_location = StringField("Location")
+    day = DateField("Date")
     duration_minutes = IntegerField("Time (minutes)")
-    distance_number = IntegerField("Distance")
+    distance_number = FloatField("Distance")
     distance_units = StringField("Distance units")
     submit = SubmitField("Submit")
 
 class PersonForm(FlaskForm):
     name = StringField("Name")
-    birthday = DateField("Birthday")
+    birthday = DateField("Birthday", validators=[Optional()])
     entity = StringField("Entity")
     bio = TextAreaField("Bio")
     submit = SubmitField("Submit")
@@ -81,8 +82,8 @@ class ContentForm(FlaskForm):
     description = StringField("Description")
     content_type = StringField("Type")
     content_creator = StringField("Creator")
-    url = StringField("url")
-    date_time = DateTimeField("Date and time")
+    url = StringField("url", validators=[Optional()])
+    date_time = DateTimeField("Date and time", validators=[Optional()])
     submit = SubmitField("Submit")
 
 class EventForm(FlaskForm):
@@ -92,4 +93,14 @@ class EventForm(FlaskForm):
     start_time = TimeField("Start Time")
     end_time = TimeField("End Time")
     location = StringField("Location")
+    submit = SubmitField("Submit")
+
+class WeightForm(FlaskForm):
+    weight = FloatField("Weight")
+    submit = SubmitField("Submit")
+
+class PredictionForm(FlaskForm):
+    statement = StringField("Statement")
+    check_date = DateField("Deadline")
+    associated_content = TextAreaField("Additional Comments", validators=[Optional()])
     submit = SubmitField("Submit")

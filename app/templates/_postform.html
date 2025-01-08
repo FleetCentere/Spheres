@@ -1,0 +1,19 @@
+
+<form action="{{ url_for('add_post') }}" method="POST">
+    {{ postform.hidden_tag() }}
+    <p>
+        {{ postform.title.label }}<br>
+        {{ postform.title }}
+        {% for error in postform.title.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ postform.body.label }}<br>
+        {{ postform.body }}
+        {% for error in postform.body.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ taskform.submit() }}</p>
+</form>

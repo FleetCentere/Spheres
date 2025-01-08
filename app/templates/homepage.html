@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage2.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -8,244 +8,55 @@
 <div class="homepage-top">
     <div class="homepage-top-left">
         <ul>
-            <li>Speak less and listen more</li>
-            <li>Manage the field as best you can</li>
+            {% for bullet in bullets %}
+            <li>{{ bullet }}</li>
+            {% endfor %}
         </ul>
     </div>
-    <div class="homepage-top-right">
+    <div class="homepage-top-center-left">
         <h2><a href="{{ url_for('tags') }}">Tags</a></h2>
-        <form action="{{ url_for('add_tag') }}" method="POST">
-            {{ tagform.hidden_tag() }}
-            <p>
-                {{ tagform.name }}
-                {% for error in tagform.name.errors %}
-                    <span class="form-error">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-            <p>{{ tagform.submit() }}</p>
-        </form>
+        {% include "_tagform.html" %}
+    </div>
+    <div class="homepage-top-center-right">
+        <h2><a href="{{ url_for('predictions') }}">Predictions</a></h2>
+        {% include "_predictionform.html" %}
+    </div>
+    <div class="homepage-top-right">
+        <h2><a href="{{ url_for('weights') }}">Weights</a></h2>
+        {% include "_weightform.html" %}
     </div>
 </div>
 
 <div class="homepage-bottom">
     <div class="homepage-left">
-        <div class="section">
+        <div class="form-holder">
             <h2>Add To-Do Item</h2>
-            <form action="{{ url_for('add_task') }}" method="POST">
-                {{ taskform.hidden_tag() }}
-                <p>
-                    {{ taskform.title.label }}<br>
-                    {{ taskform.title }}
-                    {% for error in taskform.title.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ taskform.description.label }}<br>
-                    {{ taskform.description }}
-                    {% for error in taskform.description.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>{{ taskform.submit() }}</p>
-            </form>
+            {% include "_taskform.html" %}
         </div>
 
-        <div class="section">
+        <div class="form-holder">
             <h2><a href="{{ url_for('posts') }}">Posts</a></h2>
-            <form action="{{ url_for('add_post') }}" method="POST">
-                {{ postform.hidden_tag() }}
-                <p>
-                    {{ postform.title.label }}<br>
-                    {{ postform.title }}
-                    {% for error in postform.title.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ postform.body.label }}<br>
-                    {{ postform.body }}
-                    {% for error in postform.body.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>{{ taskform.submit() }}</p>
-            </form>
+            {% include "_postform.html" %}
         </div>
-
-        <div class="section">
+        <div class="form-holder">
             <h2>Add Person</h2>
-            <form action="{{ url_for('add_person') }}" method="POST">
-                {{ personform.hidden_tag() }}
-                <p>
-                    {{ personform.name.label }}<br>
-                    {{ personform.name }}
-                    {% for error in personform.name.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ personform.birthday.label }}<br>
-                    {{ personform.birthday }}
-                    {% for error in personform.birthday.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ personform.entity.label }}<br>
-                    {{ personform.entity }}
-                    {% for error in personform.entity.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ personform.bio.label }}<br>
-                    {{ personform.bio }}
-                    {% for error in personform.bio.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>{{ personform.submit() }}</p>
-            </form>
+            {% include "_personform.html" %}
         </div>
-
-        <div class="section">
+        <div class="form-holder">
             <h2>Add Event</h2>
-            <form action="{{ url_for('add_event') }}" method="POST">
-                {{ eventform.hidden_tag() }}
-                <p>
-                    {{ eventform.title.label }}<br>
-                    {{ eventform.title }}
-                    {% for error in eventform.title.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ eventform.description.label }}<br>
-                    {{ eventform.description }}
-                    {% for error in eventform.description.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ eventform.day.label }}<br>
-                    {{ eventform.day }}
-                    {% for error in eventform.day.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ eventform.start_time.label }}<br>
-                    {{ eventform.start_time }}
-                    {% for error in eventform.start_time.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ eventform.end_time.label }}<br>
-                    {{ eventform.end_time }}
-                    {% for error in eventform.end_time.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ eventform.location.label }}<br>
-                    {{ eventform.location }}
-                    {% for error in eventform.location.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>{{ eventform.submit() }}</p>
-            </form>
+            {% include "_eventform.html" %}
         </div>
 
-        <div class="section">
+        <div class="form-holder">
             <h2><a href="{{ url_for('content') }}">Content</a></h2>
-            <form action="{{ url_for('add_content') }}" method="POST">
-                {{ contentform.hidden_tag() }}
-                <p>
-                    {{ contentform.title.label }}<br>
-                    {{ contentform.title }}
-                    {% for error in contentform.title.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ contentform.description.label }}<br>
-                    {{ contentform.description }}
-                    {% for error in contentform.description.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ contentform.url.label }}<br>
-                    {{ contentform.url }}
-                    {% for error in contentform.url.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ contentform.content_creator.label }}<br>
-                    {{ contentform.content_creator }}
-                    {% for error in contentform.content_creator.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ contentform.content_type.label }}<br>
-                    {{ contentform.content_type }}
-                    {% for error in contentform.content_type.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>{{ contentform.submit() }}</p>
-            </form>
+            {% include "_contentform.html" %}
         </div>
-
-        <div class="section">
+        <div class="form-holder">
             <h2>Add Workout</h2>
-            <form action="{{ url_for('add_workout') }}" method="POST">
-                {{ workoutform.hidden_tag() }}
-                <p>
-                    {{ workoutform.activity_name.label }}<br>
-                    {{ workoutform.activity_name }}
-                    {% for error in workoutform.activity_name.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ workoutform.activity_location.label }}<br>
-                    {{ workoutform.activity_location }}
-                    {% for error in workoutform.activity_location.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ workoutform.duration_minutes.label }}<br>
-                    {{ workoutform.duration_minutes }}
-                    {% for error in workoutform.duration_minutes.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ workoutform.distance_number.label }}<br>
-                    {{ workoutform.distance_number }}
-                    {% for error in workoutform.distance_number.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ workoutform.distance_units.label }}<br>
-                    {{ workoutform.distance_units }}
-                    {% for error in workoutform.distance_units.errors %}
-                        <span class="form-error">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>{{ personform.submit() }}</p>
-            </form>
+            {% include "_workoutform.html" %}
         </div>
-        
     </div>
+
     <div class="homepage-main">
         <h2>To Do List</h2>
         {% if tasks %}
@@ -274,14 +85,12 @@
             </tr>
             {% endfor %}
         </table>    
-        
         {% endif %}
-
     </div>
     <div class="homepage-right">
         {% if posts %}
             <h2><a href="{{ url_for('posts') }}">Posts</a></h2>
-            <table>
+            <table class="formatted-table">
                 {% for post in posts %}
                 <tr>
                     <td>{{ post.title }}</td>
@@ -291,11 +100,10 @@
             </table>
         {% endif %}
         
-        
         {% if people %}
         <hr>
         <h2>People:</h2>
-        <table>
+        <table class="formatted-table">
             {% for person in people %}
                 <tr>
                     <td>{{ person.name }}</td>
@@ -308,7 +116,7 @@
         {% if contents %}
         <hr>
         <h2><a href="{{ url_for('content') }}">Content</a></h2>
-        <table>
+        <table class="formatted-table">
             {% for content in contents %}
                 <tr>
                     <td>{{ content.title }}</td>
@@ -321,7 +129,7 @@
         {% if events %}
         <hr>
         <h2>Events</h2>
-        <table>
+        <table class="formatted-table">
             {% for event in events %}
                 <tr>
                     <td>{{ event.title }}</td>
@@ -334,7 +142,7 @@
         {% if tags %}
         <hr>
         <h2>Tags</h2>
-        <table>
+        <table class="formatted-table">
             {% for tag in tags %}
                 <tr>
                     <td>{{ tag.name }}</td>
@@ -344,6 +152,5 @@
         {% endif %}
     </div>
 </div>
-
 
 {% endblock %}

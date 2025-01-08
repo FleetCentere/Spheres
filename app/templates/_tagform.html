@@ -1,0 +1,11 @@
+
+<form action="{{ url_for('add_tag') }}" method="POST">
+    {{ tagform.hidden_tag() }}
+    <p>
+        {{ tagform.name }}
+        {% for error in tagform.name.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ tagform.submit() }}</p>
+</form>

@@ -25,7 +25,7 @@
         {% for content in contents %}
             <tr>
                 <td>{{ content.timestamp }}</td>
-                <td>{{ content.title }}</td>
+                <td><a href="{{ content.url }}" target="_blank" rel="noopener noreferrer">{{ content.title }}</a></td>
                 <td>{{ content.content_type }}</td>
                 <td>{{ content.content_creator }}</td>
                 <td>
