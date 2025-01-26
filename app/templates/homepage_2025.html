@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_2025.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Top Left Dashboard -->
+     <!-- Top Left Dashboard -->
+     <section class="dashboard">
+        <h2 id="today-date">Today's Overview</h2>
+        <div class="dashboard-item">
+            <span>Latest Weight</span>
+            <span>185.5 lbs</span>
+        </div>
+        <div class="dashboard-item">
+            <span>Last Workout</span>
+            <span>Jan 25, 2024</span>
+        </div>
+        <div class="dashboard-item">
+            <span>250+ Word Post</span>
+            <span>✓</span>
+        </div>
+        <div class="dashboard-item">
+            <span>People Contacted</span>
+            <span>3</span>
+        </div>
+        <div class="dashboard-item">
+            <span>Books Read</span>
+            <span>1</span>
+        </div>
+    </section>
+
+    <!-- Tags Section -->
+    <section class="tags-section">
+        <h2>Tags</h2>
+        <div class="tag-bubbles">
+            <div class="tag-bubble">
+                <span>Fitness</span>
+                <span>(5)</span>
+            </div>
+            <div class="tag-bubble">
+                <span>Work</span>
+                <span>(3)</span>
+            </div>
+            <div class="tag-bubble">
+                <span>Personal Development</span>
+                <span>(2)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- To-Do Table -->
+    <section class="todo-table">
+        <h2>To-Do Tasks</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Task</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Jan 26</td>
+                    <td>Review project proposal</td>
+                    <td><button class="details-btn">Details</button></td>
+                </tr>
+                <tr class="completed">
+                    <td>Jan 25</td>
+                    <td>Schedule dentist appointment</td>
+                    <td><button class="details-btn">Details</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Posts Grid -->
+    <section class="posts-grid">
+        <div class="post-card">
+            <div>Jan 25, 2024</div>
+            <div class="post-tags">
+                <span class="post-tag">Fitness</span>
+                <span class="post-tag">Health</span>
+            </div>
+            <p>Today I reflected on my fitness journey and set new goals for the upcoming month...</p>
+        </div>
+        <div class="post-card">
+            <div>Jan 24, 2024</div>
+            <div class="post-tags">
+                <span class="post-tag">Work</span>
+            </div>
+            <p>Completed a major project milestone and received positive feedback from the team...</p>
+        </div>
+    </section>
+
+    <!-- Consumed Content Grid -->
+    <section class="consumed-grid">
+        <div class="consumed-card">
+            <div>Jan 25, 2024</div>
+            <div class="post-tags">
+                <span class="post-tag">Book</span>
+                <span class="post-tag">Self-Improvement</span>
+            </div>
+            <p>Finished "Atomic Habits" by James Clear. Key takeaway: small changes compound...</p>
+        </div>
+        <div class="consumed-card">
+            <div>Jan 22, 2024</div>
+            <div class="post-tags">
+                <span class="post-tag">Podcast</span>
+            </div>
+            <p>Listened to a podcast about productivity and time management techniques...</p>
+        </div>
+    </section>
+
+{% endblock %}

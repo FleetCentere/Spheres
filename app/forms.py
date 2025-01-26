@@ -66,8 +66,8 @@ class WorkoutForm(FlaskForm):
     activity_location = StringField("Location")
     day = DateField("Date")
     duration_minutes = IntegerField("Time (minutes)")
-    distance_number = FloatField("Distance")
-    distance_units = StringField("Distance units")
+    distance_number = FloatField("Distance", validators=[Optional()])
+    distance_units = StringField("Distance units", validators=[Optional()])
     submit = SubmitField("Submit")
 
 class PersonForm(FlaskForm):

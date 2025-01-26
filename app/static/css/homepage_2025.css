@@ -1,0 +1,151 @@
+/* CSS Reset and Base Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+main {
+    background-color: #f4f4f4;
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    grid-template-rows: auto auto 1fr;
+    gap: 20px;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Top Left Dashboard Section */
+.dashboard {
+    grid-column: 1;
+    grid-row: 1;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.dashboard h2 {
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.dashboard-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+/* Tags Section */
+.tags-section {
+    grid-column: 2 / span 2;
+    grid-row: 1;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.tag-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-bubble {
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* To-Do Table */
+.todo-table {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.todo-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.todo-table th, .todo-table td {
+    border-bottom: 1px solid #eee;
+    padding: 10px;
+    text-align: left;
+}
+
+.todo-table .completed {
+    background-color: #f0f0f0;
+}
+
+.todo-table .details-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Posts Grid */
+.posts-grid {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.post-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.post-tags {
+    display: flex;
+    gap: 5px;
+}
+
+.post-tag {
+    background-color: #e0e0e0;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+/* Consumed Content Grid */
+.consumed-grid {
+    grid-column: 3;
+    grid-row: 2 / span 2;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.consumed-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

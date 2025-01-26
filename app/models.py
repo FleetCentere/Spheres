@@ -233,8 +233,8 @@ class WorkoutActivity(db.Model):
     activity_name: so.Mapped[str] = so.mapped_column(sa.String(100))
     activity_location: so.Mapped[str] = so.mapped_column(sa.String(100))
     duration_minutes: so.Mapped[int] = so.mapped_column(sa.Integer)
-    distance_number: so.Mapped[float] = so.mapped_column(sa.Float)
-    distance_units: so.Mapped[str] = so.mapped_column(sa.String(100))
+    distance_number: so.Mapped[float] = so.mapped_column(sa.Float, default=0)
+    distance_units: so.Mapped[str] = so.mapped_column(sa.String(100), default="")
     date: so.Mapped[Optional[datetime]] = so.mapped_column(nullable=True)
     timestamp_entry: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
     

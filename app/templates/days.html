@@ -6,6 +6,41 @@
 <table>
     <thead>
         <tr>
+            <th>Posts</th>
+            <th>Contents</th>
+            <th>Workouts</th>
+            <th>Events</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                {% for post in actions[list_of_days[0]]["posts"] %}
+                <p>{{ post.title }}</p>
+                {% endfor %}
+            </td>
+            <td>
+                {% for content in actions[list_of_days[0]]["contents"] %}
+                <p>{{ content.content_creator }} {{ content.content_type }} / {{ content.title }}</p>
+                {% endfor %}
+            </td>
+            <td>
+                {% for workout in actions[list_of_days[0]]["workouts"] %}
+                <p>{{ workout.activity_name }}</p>
+                {% endfor %}
+            </td>
+            <td>
+                {% for event in actions[list_of_days[0]]["events"] %}
+                <p>{{ event.title }}</p>
+                {% endfor %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
             <th>Date</th>
             <th>Posts</th>
             <th>Contents</th>
@@ -16,9 +51,9 @@
     {% for day in list_of_days %}
         <tr>
             <td>{{ day }}</td>
-            <td>{{ actions[day].posts }}</td>
-            <td>{{ actions[day].contents }}</td>
-            <td>{{ actions[day].workouts }}</td>
+            <td>{{ actions[day]["posts"] | length }}</td>
+            <td>{{ actions[day]["contents"] | length }}</td>
+            <td>{{ actions[day]["workouts"] | length }}</td>
         </tr>
     {% endfor %}
     </tbody>

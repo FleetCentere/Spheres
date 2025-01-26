@@ -198,11 +198,6 @@ def posts():
 def people():
     return redirect("homepage")
 
-@app.route("/events")
-@login_required
-def events():
-    return redirect("homepage")
-
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
 @login_required
 def edit_post(post_id):
@@ -331,11 +326,11 @@ def content(content_id=None):
                             recent_contents=recent_contents,
                             recent_workouts=recent_workouts)
 
-# @app.route("/content")
-# @login_required
-# def content():
-#     contents = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp)).all()
-#     return render_template("content.html", contents=contents)
+@app.route("/content_creator/<string:creator>")
+@login_required
+def content_creator(creator):
+    return render_template("content_creator.html", 
+                            creator=creator)
 
 @app.route("/edit_content/<int:content_id>")
 @login_required
@@ -490,7 +485,7 @@ def add_workout():
         db.session.commit()
         flash("Workout has been submitted")
         return redirect(url_for("homepage"))
-
+    return redirect(url_for("homepage"))
 
 @app.route("/add_event", methods=["POST"])
 @login_required
@@ -570,25 +565,27 @@ def get_entries_by_user_and_date(model, user_id, target_date):
     start_of_day = datetime.combine(target_date, datetime.min.time())
     end_of_day = datetime.combine(target_date, datetime.max.time())
 
-    # workouts
+    # workouts as "date" is used instead of "timestamp"
     if model == WorkoutActivity:
         entries = (
             model.query.
-            filter(model.user_id == model.id).
+            filter(model.user_id == current_user.id).
             filter(model.date >= start_of_day, model.date <= end_of_day).
             all()
         )
+    # events as "day" is used instead of "timestamp"
     elif model == Event:
         entries = (
             model.query.
-            filter(model.user_id == model.id).
+            filter(model.user_id == current_user.id).
             filter(model.day == target_date).
             all()
         )
+    # generic works for contents, weights, posts, tasks
     else:
         entries = (
             model.query.
-            filter(model.user_id == model.id).
+            filter(model.user_id == current_user.id).
             filter(model.timestamp >= start_of_day, model.timestamp <= end_of_day).
             all()
         )
@@ -599,23 +596,17 @@ def get_entries_by_user_and_date(model, user_id, target_date):
 def days():
     n = 10
     actions = { }
-    current_time = datetime.now(timezone.utc).date()
+    current_day = datetime.now(timezone.utc).date()
     # fill up {actions} with keys of days and values of dictionaries, contents=[], tasks=[], etc for given date
-    list_of_days = [current_time]
+    list_of_days = [current_day]
     for i in range(1,n):
-        list_of_days.append(current_time - timedelta(days=i))
+        list_of_days.append(current_day - timedelta(days=i))
     for day in list_of_days:
-        contents = [1, 2, 3]
-        workouts = [4, 5, 6]
-        weights = [7, 8, 9]
-        posts = [10, 11, 12]
-        tasks = [13, 14, 15]
-        events = [16, 17, 18]
         actions[day] = {"contents": get_entries_by_user_and_date(Content, current_user.id, day), 
                         "workouts": get_entries_by_user_and_date(WorkoutActivity, current_user.id, day),
-                        "weights": weights,
+                        "weights": get_entries_by_user_and_date(WeightEntry, current_user.id, day),
                         "posts": get_entries_by_user_and_date(Post, current_user.id, day),
-                        "tasks": tasks,
+                        "tasks": get_entries_by_user_and_date(Task, current_user.id, day),
                         "events": get_entries_by_user_and_date(Event, current_user.id, day)}
     return render_template("days.html", actions=actions, list_of_days=list_of_days)
 
@@ -625,20 +616,6 @@ def days():
 def predictions(prediction_id=None):
     predictionform = PredictionForm()
     predictions = Prediction.query.filter_by(user_id=current_user.id).order_by(Prediction.timestamp.desc()).all()
-    # predictions = [
-    #     {"statement": "OpenAI will fall behind",
-    #     "timestamp": datetime.now(timezone.utc),
-    #     "check_date": date(2025, 12, 31),
-    #     "tags": [],
-    #     "id": 1,
-    #     },
-    #     {"statement": "NVDA will be below $140 at YE",
-    #     "timestamp": datetime.now(timezone.utc),
-    #     "check_date": date(2025, 12, 31),
-    #     "tags": [],
-    #     "id": 2,
-    #     }
-    # ]
     if predictionform.validate_on_submit():
         if prediction_id == None:
             prediction = Prediction(statement=predictionform.statement.data,
@@ -668,7 +645,22 @@ def predictions(prediction_id=None):
             return(redirect(url_for("predictions")))
     return render_template("predictions.html", predictions=predictions, predictionform=predictionform)
 
+@app.route("/events", methods=["GET", "POST"])
+@app.route("/events/<int:event_id>", methods=["GET", "POST"])
+@login_required
+def events(event_id=None):
+    events = Event.query.filter_by(user_id=current_user.id).order_by(Event.day.desc()).all()
+    event = db.first_or_404(sa.select(Event).where(Event.id == event_id)) if event_id is not None else None
+    return render_template("events.html", 
+                            events=events, 
+                            event=event)
+
 @app.route("/add_prediction", methods=["GET", "POST"])
 @login_required
 def add_prediction():
     return redirect(url_for("predictions"))
+
+@app.route("/homepage_2025", methods=["GET", "POST"])
+@login_required
+def homepage_2025():
+    return render_template("homepage_2025.html")

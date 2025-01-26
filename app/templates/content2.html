@@ -17,6 +17,13 @@
                 <form action="" method="post">
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
+                        {{ form.content_creator.label(class="form-label") }}
+                        {{ form.content_creator(class="form-control") }}
+                        {% for error in form.content_creator.errors %}
+                            <span class="form-error">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
                         {{ form.title.label(class="form-label") }}
                         {{ form.title(class="form-control") }}
                         {% for error in form.title.errors %}
@@ -34,13 +41,6 @@
                         {{ form.content_type.label(class="form-label") }}
                         {{ form.content_type(class="form-control") }}
                         {% for error in form.content_type.errors %}
-                            <span class="form-error">[{{ error }}]</span>
-                        {% endfor %}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.content_creator.label(class="form-label") }}
-                        {{ form.content_creator(class="form-control") }}
-                        {% for error in form.content_creator.errors %}
                             <span class="form-error">[{{ error }}]</span>
                         {% endfor %}
                     </div>
@@ -91,10 +91,12 @@
                     </thead>
                     <tbody>
                         {% for creator, count in creator_stats %}
+                        {% if creator != None %}
                             <tr>
-                                <td>{{ creator }}</td>
+                                <td><a href="{{ url_for('content_creator', creator=creator) }}">{{ creator }}</a></td>
                                 <td>{{ count }}</td>
                             </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
