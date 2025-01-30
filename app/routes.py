@@ -2,8 +2,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm, TagForm, WeightForm, PredictionForm
-from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content, Tag, WeightEntry, Prediction
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, TaskForm, WorkoutForm, PersonForm, ContentForm, EventForm, TagForm, WeightForm, PredictionForm, SemiForm
+from app.models import User, Post, Task, WorkoutActivity, Person, Event, Content, Tag, WeightEntry, Prediction, SemiCompany
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone, timedelta, date
@@ -150,7 +150,7 @@ def contact():
 def projects():
     return render_template("projects.html")
 
-@app.route("/homepage")
+@app.route("/homepage", methods=["GET", "POST"])
 @login_required
 def homepage():
     predictionform = PredictionForm()
@@ -610,6 +610,13 @@ def days():
                         "events": get_entries_by_user_and_date(Event, current_user.id, day)}
     return render_template("days.html", actions=actions, list_of_days=list_of_days)
 
+@app.route("/add_prediction", methods=["GET", "POST"])
+@login_required
+def add_prediction():
+    if predictionform.validate_on_submit():
+        flash("Your prediction has been added")
+        return redirect(url_for("homepage"))
+
 @app.route("/predictions", methods=["GET", "POST"])
 @app.route("/predictions/<int:prediction_id>", methods=["GET", "POST"])
 @login_required
@@ -625,6 +632,7 @@ def predictions(prediction_id=None):
             db.session.add(prediction)
             db.session.commit()
             flash("Your prediction has been added")
+            return redirect(url_for("homepage"))
         else:
             prediction = db.first_or_404(sa.select(Prediction).where(Prediction.id == prediction_id))
             if prediction.predictor == current_user:
@@ -655,12 +663,58 @@ def events(event_id=None):
                             events=events, 
                             event=event)
 
-@app.route("/add_prediction", methods=["GET", "POST"])
-@login_required
-def add_prediction():
-    return redirect(url_for("predictions"))
-
 @app.route("/homepage_2025", methods=["GET", "POST"])
 @login_required
 def homepage_2025():
-    return render_template("homepage_2025.html")
+    tasks = db.session.query(Task).filter(Task.user_id == current_user.id, Task.deleted == False).order_by(sa.desc(Task.timestamp)).all()
+    posts = db.session.query(Post).filter(Post.user_id == current_user.id).order_by(sa.desc(Post.timestamp)).all()
+    people = db.session.query(Person).filter(Person.user_id == current_user.id).all()
+    events = db.session.query(Event).filter(Event.user_id == current_user.id).order_by(sa.desc(Event.day)).all()
+    contents = db.session.query(Content).filter(Content.user_id == current_user.id).order_by(sa.desc(Content.timestamp)).all()
+    tags = db.session.query(Tag).filter(Tag.user_id == current_user.id).order_by(sa.desc(Tag.timestamp)).all()
+    return render_template("homepage_2025.html",
+                            tags=tags)
+
+@app.route("/semis", methods=["GET", "POST"])
+@app.route("/semis/<int:company_id>", methods=["GET", "POST"])
+@login_required
+def semis(company_id=None):
+    semiform = SemiForm()
+    companies = current_user.semi_companies
+    if company_id is not None:
+        company = db.first_or_404(sa.select(SemiCompany).where(SemiCompany.id == company_id))
+        if company.owner == current_user:
+            semiform.name.data = company.name
+            semiform.ticker.data = company.ticker
+            semiform.general_industry.data = company.general_industry
+            semiform.specific_industry.data = company.specific_industry
+            semiform.country.data = company.country
+            semiform.description.data = company.description
+    if semiform.validate_on_submit():
+        if company_id is None:
+            company = SemiCompany(name=semiform.name.data, 
+                                ticker=semiform.ticker.data,
+                                general_industry=semiform.general_industry.data,
+                                specific_industry=semiform.specific_industry.data,
+                                description=semiform.description.data,
+                                country=semiform.country.data,
+                                owner=current_user)
+            db.session.add(company)
+            db.session.commit()
+            flash("Your semi company has been added")
+        if company_id is not None:
+            company = db.first_or_404(sa.select(SemiCompany).where(SemiCompany.id == company_id))
+            if company.owner == current_user:
+                company.name = semiform.name.data
+                company.ticker = semiform.ticker.data
+                company.general_industry = semiform.general_industry.data
+                company.specific_industry = semiform.specific_industry.data
+                company.description = semiform.description.data
+                company.country = semiform.country.data
+                db.session.commit()
+                flash("Your semi company has been updated")
+                return redirect(url_for('semis'))
+    return render_template("semis.html", 
+                            companies=companies,
+                            semiform=semiform)
+

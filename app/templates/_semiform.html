@@ -1,0 +1,47 @@
+
+<form action="" method="POST">
+    {{ semiform.hidden_tag() }}
+    <p>
+        {{ semiform.name.label }}<br>
+        {{ semiform.name }}
+        {% for error in semiform.name.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ semiform.ticker.label }}<br>
+        {{ semiform.ticker }}
+        {% for error in semiform.ticker.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ semiform.general_industry.label }}<br>
+        {{ semiform.general_industry }}
+        {% for error in semiform.general_industry.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ semiform.specific_industry.label }}<br>
+        {{ semiform.specific_industry }}
+        {% for error in semiform.specific_industry.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ semiform.description.label }}<br>
+        {{ semiform.description }}
+        {% for error in semiform.description.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ semiform.country.label }}<br>
+        {{ semiform.country }}
+        {% for error in semiform.country.errors %}
+            <span class="form-error">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ semiform.submit() }}</p>
+</form>

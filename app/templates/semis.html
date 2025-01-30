@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Semiconductors!</h1>
+
+<!-- Container for form and table -->
+<div>
+    <!-- Semiform container -->
+    <div>
+        {% include "_semiform.html" %}
+    </div>
+
+    <!-- Semitable container -->
+    <div>
+    {% if companies %}
+        {% include "_semitable.html" %}
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

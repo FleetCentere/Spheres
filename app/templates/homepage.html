@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_2025.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage2.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -19,7 +19,7 @@
         {% include "_tagform.html" %}
     </div>
     <div class="homepage-top-center-right">
-        <h2><a href="{{ url_for('predictions') }}">Predictions</a></h2>
+        <h2><a href="{{ url_for('add_prediction') }}">Predictions</a></h2>
         {% include "_predictionform.html" %}
     </div>
     <div class="homepage-top-right">
@@ -95,7 +95,7 @@
                 {% for post in posts %}
                 <tr>
                     <td>{{ post.title }}</td>
-                    <td>{{ post.body }}</td>
+                    <td>{{ post.body[:200] }}</td>
                 </tr>
                 {% endfor %}
             </table>

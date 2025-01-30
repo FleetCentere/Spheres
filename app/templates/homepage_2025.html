@@ -4,6 +4,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="main-homepage">
 <!-- Top Left Dashboard -->
      <!-- Top Left Dashboard -->
      <section class="dashboard">
@@ -34,18 +35,11 @@
     <section class="tags-section">
         <h2>Tags</h2>
         <div class="tag-bubbles">
-            <div class="tag-bubble">
-                <span>Fitness</span>
-                <span>(5)</span>
-            </div>
-            <div class="tag-bubble">
-                <span>Work</span>
-                <span>(3)</span>
-            </div>
-            <div class="tag-bubble">
-                <span>Personal Development</span>
-                <span>(2)</span>
-            </div>
+            {% for tag in tags %}
+                <div class="tag-bubble">
+                    <span>{{ tag.name }}</span>
+                </div>
+            {% endfor %}
         </div>
     </section>
 
@@ -112,5 +106,5 @@
             <p>Listened to a podcast about productivity and time management techniques...</p>
         </div>
     </section>
-
+</main>
 {% endblock %}

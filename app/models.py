@@ -81,6 +81,7 @@ class User(UserMixin, db.Model):
     tags: so.Mapped[list["Tag"]] = so.relationship(back_populates="owner", uselist=True)
     weight_entries: so.Mapped[list["WeightEntry"]] = so.relationship(back_populates="user", uselist=True)
     predictions: so.Mapped[list["Prediction"]] = so.relationship(back_populates="predictor", uselist=True)
+    semi_companies: so.Mapped[list["SemiCompany"]] = so.relationship(back_populates="owner", uselist=True)
 
     following: so.Mapped[list["User"]] = so.relationship(
         secondary=followers,
@@ -199,6 +200,9 @@ class Post(db.Model):
 
     author: so.Mapped[User] = so.relationship(back_populates="posts")
     tags: so.Mapped[list["Tag"]] = so.relationship("Tag", secondary=post_tags, back_populates="posts", uselist=True)
+
+    semi_company_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey("semi_companies.id"), index=True)
+    semi_company: so.Mapped[Optional["SemiCompany"]] = so.relationship(back_populates="posts")
     
     def __repr__(self):
         return "<Post {}>".format(self.body)
@@ -329,3 +333,102 @@ class Prediction(db.Model):
     
     def __repr__(self):
         return f"<Prediction {self.statement} ({self.check_date})>"
+
+# Association tables for supplier/customer relationships
+company_suppliers = sa.Table(
+    "company_suppliers",
+    db.metadata,
+    sa.Column("company_id", sa.Integer, sa.ForeignKey("semi_companies.id"), primary_key=True),
+    sa.Column("supplier_id", sa.Integer, sa.ForeignKey("semi_companies.id"), primary_key=True)
+)
+
+company_customers = sa.Table(
+    "company_customers",
+    db.metadata,
+    sa.Column("company_id", sa.Integer, sa.ForeignKey("semi_companies.id"), primary_key=True),
+    sa.Column("customer_id", sa.Integer, sa.ForeignKey("semi_companies.id"), primary_key=True)
+)
+
+class SemiCompany(db.Model):
+    __tablename__ = "semi_companies"
+
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(100), index=True, unique=True, nullable=False)
+    ticker: so.Mapped[str] = so.mapped_column(sa.String(10), index=True, unique=True, nullable=False)
+    general_industry: so.Mapped[str] = so.mapped_column(sa.String(100), nullable=False)
+    specific_industry: so.Mapped[str] = so.mapped_column(sa.String(100), nullable=False)
+    description: so.Mapped[str] = so.mapped_column(sa.Text, nullable=False)
+    country: so.Mapped[str] = so.mapped_column(sa.String(100), nullable=False)
+
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    owner: so.Mapped[User] = so.relationship(back_populates="semi_companies")
+    
+    # Financial data
+    revenue_2025: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2024: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2023: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2022: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2025_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2024_q4: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2024_q3: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2024_q2: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    revenue_2024_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+
+    labor_costs_2025: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2024: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2023: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2022: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2025_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2024_q4: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2024_q3: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2024_q2: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    labor_costs_2024_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    
+    cogs_2025: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2024: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2023: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2022: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2025_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2024_q4: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2024_q3: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2024_q2: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    cogs_2024_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+
+    capex_2025: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2024: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2023: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2022: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2025_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2024_q4: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2024_q3: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2024_q2: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    capex_2024_q1: so.Mapped[Optional[float]] = so.mapped_column(sa.Float)
+    
+    notes: so.Mapped[Optional[str]] = so.mapped_column(sa.Text)
+
+    # Relationships
+    # Self-referential many-to-many relationship for suppliers
+    suppliers: so.Mapped[list["SemiCompany"]] = so.relationship(
+        secondary=company_suppliers,
+        primaryjoin=(id == company_suppliers.c.company_id),
+        secondaryjoin=(id == company_suppliers.c.supplier_id),
+        backref=so.backref("company_customers", lazy="dynamic"),
+        lazy="dynamic"
+    )
+
+    customers: so.Mapped[list["SemiCompany"]] = so.relationship(
+        secondary=company_customers,
+        primaryjoin=(id == company_customers.c.company_id),
+        secondaryjoin=(id == company_customers.c.customer_id),
+        backref=so.backref("company_suppliers", lazy="dynamic"),
+        lazy="dynamic"
+    )
+
+    # One-to-many relationship with posts
+    posts: so.Mapped[list["Post"]] = so.relationship(
+        back_populates="semi_company",
+        uselist=True
+    )
+
+    def __repr__(self):
+        return f"<SemiCompany {self.name} ({self.ticker})>"

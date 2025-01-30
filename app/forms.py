@@ -48,7 +48,7 @@ class EmptyForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField("Title")
-    body = TextAreaField("Submit your post", validators=[DataRequired(), Length(min=1, max=240)])
+    body = TextAreaField("Submit your post", validators=[DataRequired(), Length(min=1, max=4000)])
     tags = StringField("Tags", validators=[Optional()])
     submit = SubmitField("Submit")
 
@@ -103,4 +103,13 @@ class PredictionForm(FlaskForm):
     statement = StringField("Statement")
     check_date = DateField("Deadline")
     associated_content = TextAreaField("Additional Comments", validators=[Optional()])
+    submit = SubmitField("Submit")
+
+class SemiForm(FlaskForm):
+    name = StringField("Company Name")
+    ticker = StringField("Ticker")
+    general_industry = StringField("Industry")
+    specific_industry = StringField("Specific Industry")
+    description = StringField("Description")
+    country = StringField("Country")
     submit = SubmitField("Submit")
